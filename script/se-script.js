@@ -351,7 +351,7 @@ var colorpicker = {
 				h = (coords.x > 90) ? (360 - h ) :  h;
 			} 
 			h = (h>=360) ? 360 : ((h<0) ? 0 : h);
-			console.log("H:" + h + " V: " + v + " S:"  +s})
+			console.log("H:" + h + " V: " + v + " S:"  +s)
 		return {H:h, V:v, S:s}
 		}
 	},
@@ -364,7 +364,7 @@ se = {
 	cssOuter: "style/se-iframe-style.css",
 	cssInner: "body{background:#fff; width:960px;display:block; min-height:1140px;word-wrap: break-word; color:maroon; font-family:tahoma; font-size:12px; } p{margin:0px; word-wrap: break-word; } div{word-wrap: break-word; } a{cursor:pointer}",
     buttons: {	'default': ['bold','italic', 'underline','justifyleft', 'justifycenter', 'justifyright','superscript', 'subscript','InsertUnorderedList','InsertOrderedList'],
-    			'colorpicker': ['colorfont', 'colorbg'],
+    			'colorpicker': ['ForeColor', 'BackColor'],
     			'font-type': [],
     			'table':[],
 	},
@@ -384,18 +384,19 @@ se = {
 				break;
 		}
 	},   	
-    createToolbar: function(){
-		var _t = this,
-		tHTML = '',
-		tb = find("#toolbar"+_t.id)[0];
-		for(var type in _t.buttons){
-			var b_l = _t.buttons[type].length;
-			for(var i=0; i<b_l; i++){
-				tHTML += _t.patterns({name:'DEFAULT-BUTTON-ON-TOOLBAR', t:type,  b: _t.buttons[type][i]});
-			}
+  createToolbar: function(){
+	var _t = this,
+	tHTML = '',
+	tb = find("#toolbar"+_t.id)[0];
+	for(var type in _t.buttons){
+		var b_l = _t.buttons[type].length;
+		for(var i=0; i<b_l; i++){
+			console.log(_t.buttons[type][i])
+			tHTML += _t.patterns({name:'DEFAULT-BUTTON-ON-TOOLBAR', t:type,  b: _t.buttons[type][i]});
 		}
-        return tHTML;
-    },
+	}
+      return tHTML;
+  },
     // set event
 	event: function(options, func){
 		var _t = this;
@@ -410,11 +411,22 @@ se = {
 			}
 		}
 	},
-	// execComand
+	/* execComand
+		@param:
+			ifr:object{
+				ifr.this - iframe
+				ifr.click - name command
+				ift.bool - true/false
+				ift.val - value
+			}
+	*/
 	exec: function(ifr){
 		return  ifr.this.document.execCommand(ifr.click, ifr.bool, ifr.val);
 	},
-	// init 
+	/*
+	*init text editor;
+	*create iframe, toolbar;
+	*/ 
   	init: function(){
 		var _t = this,
 		iframe = [],
@@ -442,8 +454,8 @@ se = {
 	   				colorpicker.init({
    						what: [elem], 
    						css: ['background','border','color'], 
-   						func: function(){
-   							// console.log(this.color)
+   						func: function(){ //BackColor
+   							_t.exec({this:$this, click: elem.id, bool:false, val: this.color})			
    						}
    					});
 	   				
