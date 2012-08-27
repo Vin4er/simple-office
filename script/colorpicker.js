@@ -26,6 +26,8 @@ var colorpicker = {
   },
   getMarkers: {},
   getMask: {},
+  delta: "",
+
   func: function(){},
 
  createElem: function(html) {
@@ -105,7 +107,8 @@ var colorpicker = {
       wheel: cp.find("." + cp.class.mask_wheel)[0],
       mask: cp.find("." + cp.class.mask_mask)[0],
     };
-    cp.radius = (cp.getMask.wheel.offsetWidth/2)
+    cp.delta = Math.round(cp.getMarkers.wheel.offsetWidth/2),
+    cp.radius = (cp.getMask.wheel.offsetWidth/2-8)
     cp.color = cp.what[0].style[cp.css[0]] || '#ffffff';
     cp._setColor();
     cp._drag();
@@ -130,7 +133,6 @@ var colorpicker = {
   },
   setPos: function(marker){
     var cp = this,
-    D = 0//8, // delta for shifts
     parentMask = marker.parentNode,
     Radius =  cp.radius, 
     cp_mask = parentMask.parentNode, // colorpicker div
@@ -144,7 +146,8 @@ var colorpicker = {
       width: parentMask.offsetWidth,
       top: parentMask.offsetTop,
       height: parentMask.offsetHeight,
-    },
+    },   
+    //center cursor
     coord = {}, 
     c = false;
     if(tm == "circle"){
@@ -160,18 +163,19 @@ var colorpicker = {
       }
       cp.getMask.mask.style.backgroundColor = "#"+cp.conv.RGB2Hex(cp.conv.HSV2RGB({S:255, V:255,H:cp.conv.calcHSV(coord).H}))
       c = cp.conv.RGB2Hex(cp.conv.HSV2RGB(cp.conv.calcHSV(coord)));
-    }else{ // rect
+    }else{
+    // rect
       coord = {
-        x: (cp.getMouse().x - cp_opt.left - mask_opt.left-D),
-        y: (cp.getMouse().y - cp_opt.top - mask_opt.top-D),
+        x: (cp.getMouse().x - cp_opt.left -cp.delta- mask_opt.left),
+        y: (cp.getMouse().y - cp_opt.top -cp.delta- mask_opt.top),
       }
       c = cp.conv.RGB2Hex(cp.conv.HSV2RGB(cp.conv.calcHSV()));
     }   
     cp.color =  "#"+cp.conv.RGB2Hex(cp.conv.HSV2RGB(cp.conv.calcHSV(coord)))
     cp.change();  
     ms = marker.style;
-    ms.left = ((coord.x >= 0 )&&(coord.x < (mask_opt.width-D))) ? (coord.x +"px") : ms.left ;
-    ms.top  = ((coord.y >= 0 )&&(coord.y < (mask_opt.height-D))) ? (coord.y +"px") : ms.top;
+    ms.left = ((coord.x >= 0-cp.delta )&&(coord.x < (mask_opt.width-cp.delta))) ? (coord.x +"px") : ms.left ;
+    ms.top  = ((coord.y >= 0-cp.delta )&&(coord.y < (mask_opt.height-cp.delta))) ? (coord.y +"px") : ms.top;
   },
   _setColor: function(){
     var cp = this,
@@ -406,8 +410,8 @@ var colorpicker = {
     },
     calcHSV: function(coords){
       var cp = colorpicker,
-      s = parseInt(cp.getMarkers.mask.offsetLeft*255/cp.radius),
-      v = parseInt(Math.abs(cp.getMarkers.mask.offsetTop-cp.radius)*255/cp.radius),
+      s = Math.round((cp.getMarkers.mask.offsetLeft+cp.delta)*255/cp.radius),
+      v = Math.round(Math.abs(cp.getMarkers.mask.offsetTop+cp.delta-cp.radius)*255/cp.radius),
       h = false,  
       cp_color = (cp.getMask.mask.style.backgroundColor == "") ? "rgb(0,0,0)" : cp.getMask.mask.style.backgroundColor;
       cp.getMask.mask.style.backgroundColor = cp_color;
