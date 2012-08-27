@@ -1,3 +1,13 @@
+/*
+ * Name: Simple Colorpicker version 2.0;
+ * Developer: Lubinskiy Sergey;
+ * Contacts[vk.com]: http://vkontakte.ru/sergey.lyubinsky;
+ * Contacts[mail]: Vin4er1@yandex.ru;
+ * Changing:  rewrite all code
+ #respect amphetamine (o.o)
+ */
+
+
 var colorpicker = {
   what: '',
   position: {},
@@ -18,6 +28,14 @@ var colorpicker = {
   getMask: {},
   func: function(){},
 
+ createElem: function(html) {
+    var container = document.createElement('div');
+    container.innerHTML = html;
+    return container.firstChild
+  },
+  find: function (elem){
+    return document.querySelectorAll(elem);
+  },
   pattern: function(opt){
     var cp = this;
     switch(opt){
@@ -45,11 +63,11 @@ var colorpicker = {
   */
   close: function(){
     var cp = this,
-    place = find(cp.append)[0],
+    place = cp.find(cp.append)[0],
     elems = {
-      html_cp: find("." + cp.class.wrap),
-      backdrop: find("." + cp.class.backdrop),
-      leng:  find("." + cp.class.wrap).length
+      html_cp: cp.find("." + cp.class.wrap),
+      backdrop: cp.find("." + cp.class.backdrop),
+      leng:  cp.find("." + cp.class.wrap).length
     }
     for(var item=0; item<elems.leng; item++){
       place.removeChild(elems.html_cp[item]);
@@ -68,10 +86,10 @@ var colorpicker = {
   init: function(opt){
     this.close();
     var cp = this,
-    color = createElem(cp.pattern('cp')),
-    backdrop = createElem(cp.pattern('backdrop')),
+    color = cp.createElem(cp.pattern('cp')),
+    backdrop = cp.createElem(cp.pattern('backdrop')),
     col_s = color.style,
-    append = find(cp.append)[0];  
+    append = cp.find(cp.append)[0];  
     cp.what = opt.what;
     cp.css = opt.css; 
     cp.func = opt.func;
@@ -80,15 +98,15 @@ var colorpicker = {
     append.appendChild(color);    
     append.appendChild(backdrop);
     cp.getMarkers = {
-      wheel: find('.' + cp.class.marker_wheel)[0],
-      mask:  find('.' + cp.class.marker_mask)[0]
+      wheel: cp.find("." + cp.class.marker_wheel)[0],
+      mask:  cp.find("." + cp.class.marker_mask)[0]
     };
     cp.getMask = {
-      wheel: find('.' + cp.class.mask_wheel)[0],
-      mask: find('.' + cp.class.mask_mask)[0],
+      wheel: cp.find("." + cp.class.mask_wheel)[0],
+      mask: cp.find("." + cp.class.mask_mask)[0],
     };
-    cp.radius = (cp.getMask.wheel.offsetWidth/2)-7
-    cp.color = cp.what[0].style[cp.css[0]] ||'#ffffff';
+    cp.radius = (cp.getMask.wheel.offsetWidth/2)
+    cp.color = cp.what[0].style[cp.css[0]] || '#ffffff';
     cp._setColor();
     cp._drag();
   },
@@ -136,7 +154,6 @@ var colorpicker = {
       y = -(x*y0/x0);
       x = (x0 > 0) ? (-x) : x;
       y = (x0 > 0) ? (-y) : y;
-      // console.log(y)
       coord = {
         x: parseInt(Math.abs(x-Radius)),
         y: parseInt(Math.abs(y-Radius)),
@@ -172,7 +189,7 @@ var colorpicker = {
     }
   */
   getMouse: function(e){
-    e = e || window.event
+    e = e || window.event;
     if (e.pageX == null && e.clientX != null ) {
       var html = document.documentElement; var body = document.body
       e.pageX = e.clientX + (html && html.scrollLeft || body && body.scrollLeft || 0) - (html.clientLeft || 0)
@@ -189,22 +206,28 @@ var colorpicker = {
   _drag: function(){
     var cp = this;
     cp.event( document.body,  'click',  // hide colorpiker
-      function(el){ return el.className == cp.class.backdrop;}, 
-      function(e){ cp.close();}
+      function(el){ 
+        return el.className == cp.class.backdrop;
+      }, 
+      function(e){ 
+        cp.close();
+      }
     );  
     cp.event( document.body, 'mousedown', // drag markers - events
-      function(el){ return (el.className == cp.class.mask_mask || el.className ==  cp.class.mask_wheel);}, 
-      function(e){
+      function(el){ 
+        return ((el.className == cp.class.mask_mask) || (el.className ==  cp.class.mask_wheel));
+      }, 
+      function(){
         var classname = this.className;
         cp.mdown = true,
         is_mask = (classname == cp.class.mask_mask);
         cp.setPos((is_mask) ? cp.getMarkers.mask : cp.getMarkers.wheel);
-        document.body.onmousemove = function(){
+        document.body.onmousemove = function(e){
           if(cp.mdown != false){
             cp.setPos((is_mask) ? cp.getMarkers.mask : cp.getMarkers.wheel);
           }
         }
-        document.body.onmouseup = function(){
+        document.body.onmouseup = function(e){
           cp.mdown = false;
           cp.setPos((is_mask) ? cp.getMarkers.mask : cp.getMarkers.wheel);
         }
@@ -218,56 +241,166 @@ var colorpicker = {
   */
   conv: { // convertate in 
     Hex2RGB: function(HEX){
-      var str='';
-      if(HEX.length==3){for(var i in HEX){str=str+HEX[i]+HEX[i]};HEX=str;str='';};
-      for(var i in HEX){if(HEX[i]=='0'){str=str+HEX[i]}else{break}};
-      if(str.length==6){return {R:0, G:0, B:0}};
-      if(HEX.length!=6){return false};
-      if(HEX!=str+parseInt(HEX,16).toString(16)){return false};
-      HEX=parseInt(HEX,16);
-      RGB = {R:HEX>>16, G:(HEX&0x00FF00)>>8,B:(HEX&0x0000FF)};
+      var str = '';
+      if(HEX.length == 3){
+        for(var i in HEX){
+          str = str + HEX[i] + HEX[i]
+        }
+        HEX = str;
+        str = '';
+      }
+      for(var i in HEX){
+        if(HEX[i] == '0'){
+          str = str + HEX[i]
+        }else{
+          break
+        }
+      }
+      if(str.length == 6){
+        return {
+          R:0, 
+          G:0, 
+          B:0
+        }
+      }
+      if(HEX.length != 6){
+        return false
+      }
+      if(HEX != str + parseInt(HEX, 16).toString(16)){ 
+        return false
+      }
+      HEX = parseInt(HEX, 16);
+      RGB = {
+        R:HEX>>16, 
+        G:(HEX&0x00FF00)>>8,
+        B:(HEX&0x0000FF)
+      };
       return RGB;
     },
     RGB2HSV: function (RGB) {
-      var h=s=v=0;
-      var min = Math.min(RGB.R, RGB.G, RGB.B);
-      var max = Math.max(RGB.R, RGB.G, RGB.B);
-      var delta = max - min;
-      if(max!=0){if(RGB.R==max){h=(RGB.G-RGB.B)/delta}else if(RGB.G==max){h=2+(RGB.B-RGB.R)/delta}else{h=4+(RGB.R-RGB.G)/delta}}else{h=-1};
-      h*= 60;
-      if(h<0){h += 360};if(max==0){s = max}else{s=255*delta/max};v = max;
-      if((RGB.R==RGB.G)&&(RGB.R==RGB.B)){h=0};
-      HSV= {H:parseInt(h),S:parseInt(s),V:parseInt(v)};
+      var h = 0,
+      s = 0,
+      v = 0,
+      min = Math.min(RGB.R, RGB.G, RGB.B),
+      max = Math.max(RGB.R, RGB.G, RGB.B),
+      delta = max - min;
+      if(max!=0){
+        if(RGB.R == max){
+          h = (RGB.G - RGB.B)/delta
+        }else 
+          if(RGB.G == max){
+            h = 2 + (RGB.B - RGB.R)/delta
+          }else{
+            h = 4 + (RGB.R - RGB.G)/delta
+          }
+        }else{
+          h = -1
+        };
+      h *= 60;
+      if(h < 0){
+        h += 360
+      }
+      if(max == 0){
+        s = max;
+      }else{
+        s = 255*delta/max
+      }
+      v = max;
+      if((RGB.R==RGB.G)&&(RGB.R==RGB.B)){
+        h=0
+      };
+      HSV = {
+        H: parseInt(h),
+        S: parseInt(s),
+        V: parseInt(v)
+      };
     return  HSV;
     },
     HSV2RGB: function (HSV) {
-      var r,g,b;
-      if(HSV.S == 0){r=g=b=HSV.V}
-      else {var t1 = HSV.V; var t2 = (255-HSV.S)*HSV.V/255; var t3 = (t1-t2)*(HSV.H%60)/60;
-       if(HSV.H<60){r=t1;b=t2;g=t2+t3}else if(HSV.H<120){g=t1;b=t2;r=t1-t3}else if(HSV.H<180){g=t1; r=t2;b=t2+t3}
-       else if(HSV.H<240){b=t1; r=t2;g=t1-t3}else if(HSV.H<300){b=t1;g=t2;r=t2+t3}else if(HSV.H<360){r=t1;g=t2;b=t1-t3}else{r=0;g=0;b=0}
+      var r, g, b;
+      if(HSV.S == 0){
+        r = g = b = HSV.V
+      }else {
+        var t1 = HSV.V,
+        t2 = (255-HSV.S)*HSV.V/255,
+        t3 = (t1-t2)*(HSV.H%60)/60;
+       if(HSV.H<60){
+        r = t1;
+        b = t2;
+        g = t2 + t3 
+      }else 
+        if(HSV.H<120){
+          g = t1;
+          b = t2;
+          r = t1-t3
+        }else 
+          if(HSV.H < 180){
+            g = t1; 
+            r = t2;
+            b = t2+t3;
+          }else 
+            if(HSV.H < 240){
+              b=t1; 
+              r=t2;
+              g=t1-t3
+            }else 
+              if(HSV.H<300){
+                b=t1;
+                g=t2;
+                r=t2+t3
+              }else 
+                if(HSV.H<360){
+                  r=t1;
+                  g=t2;
+                  b=t1-t3
+                }else{
+                  r=0;
+                  g=0;
+                  b=0
+                }
       };
-      if(r<0){r=0}; if(g<0){g=0}; if(b<0){b=0};
-      RGB={R:parseInt(r),G:parseInt(g),B:parseInt(b)};
-    return RGB;
+      if(r<0){
+        r=0
+      } 
+      if(g<0){
+        g = 0;
+      }
+      if(b < 0){
+        b = 0 
+      } 
+      return {
+        R: parseInt(r),
+        G: parseInt(g),
+        B: parseInt(b)
+      };
     },
     RGB2Hex: function (RGB) {
-      var HEX = [RGB.R.toString(16),RGB.G.toString(16),RGB.B.toString(16)];
-      for(var f=0; f<HEX.length; f++){ if (HEX[f].length == 1){HEX[f] = '0' + HEX[f]};}
+      var HEX = [RGB.R.toString(16), RGB.G.toString(16), RGB.B.toString(16)];
+      for(var f=0; f<HEX.length; f++){ 
+        if (HEX[f].length == 1){
+          HEX[f] = '0' + HEX[f]
+        }
+      }
     return HEX.join('');
     },
     CSScl2RGB: function (s){
-      if( (s=='transparent')||(s=='rgba(0, 0, 0, 0)')||(s=='rgb(0, 0, 0)') ){return {R:0, G:0, B:0}}
+      if( (s=='transparent')||(s=='rgba(0, 0, 0, 0)')||(s=='rgb(0, 0, 0)') ){
+        return {
+          R:0, 
+          G:0, 
+          B:0
+        }
+      }
       if(s.indexOf('#') != "-1"){
         s = s.substring(1); 
         return colorpicker.conv.Hex2RGB(s);
       }else{
-        s=s.substring(4,s.length-1);
-        s=s.split(','); 
+        s = s.substring(4,s.length-1);
+        s = s.split(','); 
         return {
-          R:parseInt(s[0]),
-          G:parseInt(s[1]),
-          B:parseInt(s[2])
+          R: parseInt(s[0]),
+          G: parseInt(s[1]),
+          B: parseInt(s[2])
         }
       }
     },
@@ -288,7 +421,11 @@ var colorpicker = {
       } 
       h = (h>=360) ? 360 : ((h<0) ? 0 : h);
       console.log("H:" + h + " V: " + v + " S:"  +s)
-    return {H:h, V:v, S:s}
+      return {
+        H: h, 
+        V: v, 
+        S: s
+      }
     }
   },
   

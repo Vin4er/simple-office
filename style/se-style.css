@@ -51,8 +51,8 @@ body{background:rgba(0,0,0,.6);}
 .toolbar #justifyleft{background: url(../icons/icons.png) no-repeat; background-position: -512px;}
 .toolbar #justifycenter{background: url(../icons/icons.png) no-repeat; background-position: -544px;}
 .toolbar #justifyright{background: url(../icons/icons.png) no-repeat; background-position: -576px;}
-.toolbar #colorfont{background: url(../icons/icons.png) no-repeat; background-position: -64px;}
-.toolbar #colorbg{background: url(../icons/icons.png) no-repeat; background-position: -704px;}
+.toolbar #ForeColor{background: url(../icons/icons.png) no-repeat; background-position: -64px;}
+.toolbar #BackColor{background: url(../icons/icons.png) no-repeat; background-position: -704px;}
 .toolbar #link{ background: url(../icons/icons.png) no-repeat; background-position: -192px;}
 .toolbar #image{ background: url(../icons/icons.png) no-repeat; background-position: -128px;}
 .toolbar #superscript{ background: url(../icons/icons.png) no-repeat; background-position: -416px;}
