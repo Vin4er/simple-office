@@ -108,7 +108,7 @@ var colorpicker = {
       mask: cp.find("." + cp.class.mask_mask)[0],
     };
     cp.delta = Math.round(cp.getMarkers.wheel.offsetWidth/2),
-    cp.radius = (cp.getMask.wheel.offsetWidth/2-8)
+    cp.radius = (cp.getMask.wheel.offsetWidth/2-cp.delta);
     cp.color = cp.what[0].style[cp.css[0]] || '#ffffff';
     cp._setColor();
     cp._drag();
@@ -151,37 +151,36 @@ var colorpicker = {
     coord = {}, 
     c = false;
     if(tm == "circle"){
-      var x0 = cp.getMouse().x - cp_opt.left - Radius;
-      var y0 = -cp.getMouse().y +  cp_opt.top + Radius;
-      var x =  Math.sqrt((Radius*Radius*x0*x0)/(x0*x0+y0*y0) ),
+      var x0 = cp.getMouse().x - cp_opt.left - cp.radius;
+      var y0 = -cp.getMouse().y +  cp_opt.top + cp.radius;
+      var x =  Math.sqrt((cp.radius*cp.radius*x0*x0)/(x0*x0+y0*y0) ),
       y = -(x*y0/x0);
       x = (x0 > 0) ? (-x) : x;
       y = (x0 > 0) ? (-y) : y;
       coord = {
-        x: parseInt(Math.abs(x-Radius)),
-        y: parseInt(Math.abs(y-Radius)),
+        x: parseInt(Math.abs(x - cp.radius)),
+        y: parseInt(Math.abs(y - cp.radius)),
       }
       cp.getMask.mask.style.backgroundColor = "#"+cp.conv.RGB2Hex(cp.conv.HSV2RGB({S:255, V:255,H:cp.conv.calcHSV(coord).H}))
-      c = cp.conv.RGB2Hex(cp.conv.HSV2RGB(cp.conv.calcHSV(coord)));
+      cp.color =  "#"+cp.conv.RGB2Hex(cp.conv.HSV2RGB(cp.conv.calcHSV(coord)))
     }else{
     // rect
       coord = {
         x: (cp.getMouse().x - cp_opt.left -cp.delta- mask_opt.left),
         y: (cp.getMouse().y - cp_opt.top -cp.delta- mask_opt.top),
       }
-      c = cp.conv.RGB2Hex(cp.conv.HSV2RGB(cp.conv.calcHSV()));
+      cp.color =  "#"+cp.conv.RGB2Hex(cp.conv.HSV2RGB(cp.conv.calcHSV()))
     }   
-    cp.color =  "#"+cp.conv.RGB2Hex(cp.conv.HSV2RGB(cp.conv.calcHSV(coord)))
     cp.change();  
     ms = marker.style;
-    ms.left = ((coord.x >= 0-cp.delta )&&(coord.x < (mask_opt.width-cp.delta))) ? (coord.x +"px") : ms.left ;
-    ms.top  = ((coord.y >= 0-cp.delta )&&(coord.y < (mask_opt.height-cp.delta))) ? (coord.y +"px") : ms.top;
+    ms.left = ((coord.x > 0-cp.delta )&&(coord.x < (mask_opt.width-cp.delta))) ? (coord.x +"px") : ms.left ;
+    ms.top  = ((coord.y > 0-cp.delta )&&(coord.y < (mask_opt.height-cp.delta))) ? (coord.y +"px") : ms.top;
   },
   _setColor: function(){
     var cp = this,
     color = cp.color;
-    cp.getMarkers.wheel.style.left = parseInt(cp.radius*Math.cos((cp.conv.RGB2HSV(cp.conv.CSScl2RGB(color)).H+271)/180*Math.PI)+cp.radius)+'px';
-    cp.getMarkers.wheel.style.top  = parseInt(cp.radius*Math.sin((cp.conv.RGB2HSV(cp.conv.CSScl2RGB(color)).H+271)/180*Math.PI)+cp.radius)+'px';
+    cp.getMarkers.wheel.style.left = parseInt(cp.radius*Math.cos((cp.conv.RGB2HSV(cp.conv.CSScl2RGB(color)).H+255)/180*Math.PI)+cp.radius)+'px';
+    cp.getMarkers.wheel.style.top  = parseInt(cp.radius*Math.sin((cp.conv.RGB2HSV(cp.conv.CSScl2RGB(color)).H+255)/180*Math.PI)+cp.radius)+'px';
     cp.getMarkers.mask.style.left = parseInt(cp.conv.RGB2HSV(cp.conv.CSScl2RGB(color)).S/255*cp.radius)+'px';
     cp.getMarkers.mask.style.top  = parseInt((255-cp.conv.RGB2HSV(cp.conv.CSScl2RGB(color)).V)/255*cp.radius)+'px';
   },
@@ -262,18 +261,18 @@ var colorpicker = {
       }
       if(str.length == 6){
         return {
-          R:0, 
-          G:0, 
-          B:0
+          R: 0, 
+          G: 0, 
+          B: 0
         }
       }
       if(HEX.length != 6){
         return false
       }
-      if(HEX != str + parseInt(HEX, 16).toString(16)){ 
+      if(HEX != str + Math.round(HEX, 16).toString(16)){ 
         return false
       }
-      HEX = parseInt(HEX, 16);
+      HEX = Math.round(HEX, 16);
       RGB = {
         R:HEX>>16, 
         G:(HEX&0x00FF00)>>8,
@@ -331,36 +330,36 @@ var colorpicker = {
        if(HSV.H<60){
         r = t1;
         b = t2;
-        g = t2 + t3 
+        g = t2 + t3;
       }else 
         if(HSV.H<120){
           g = t1;
           b = t2;
-          r = t1-t3
+          r = t1 - t3;
         }else 
           if(HSV.H < 180){
             g = t1; 
             r = t2;
-            b = t2+t3;
+            b = t2 + t3;
           }else 
             if(HSV.H < 240){
-              b=t1; 
-              r=t2;
-              g=t1-t3
+              b = t1; 
+              r = t2;
+              g = t1 - t3;
             }else 
-              if(HSV.H<300){
-                b=t1;
-                g=t2;
-                r=t2+t3
+              if(HSV.H < 300){
+                b = t1;
+                g = t2;
+                r = t2 + t3;
               }else 
-                if(HSV.H<360){
-                  r=t1;
-                  g=t2;
-                  b=t1-t3
+                if(HSV.H < 360){
+                  r = t1;
+                  g = t2;
+                  b = t1-t3;
                 }else{
-                  r=0;
-                  g=0;
-                  b=0
+                  r = 0;
+                  g = 0;
+                  b = 0;
                 }
       };
       if(r<0){
@@ -382,7 +381,7 @@ var colorpicker = {
       var HEX = [RGB.R.toString(16), RGB.G.toString(16), RGB.B.toString(16)];
       for(var f=0; f<HEX.length; f++){ 
         if (HEX[f].length == 1){
-          HEX[f] = '0' + HEX[f]
+          HEX[f] = '0' + HEX[f];
         }
       }
     return HEX.join('');
@@ -411,20 +410,21 @@ var colorpicker = {
     calcHSV: function(coords){
       var cp = colorpicker,
       s = Math.round((cp.getMarkers.mask.offsetLeft+cp.delta)*255/cp.radius),
-      v = Math.round(Math.abs(cp.getMarkers.mask.offsetTop+cp.delta-cp.radius)*255/cp.radius),
+      v = Math.round(Math.abs(cp.getMarkers.mask.offsetTop-cp.radius)*255/cp.radius),
       h = false,  
       cp_color = (cp.getMask.mask.style.backgroundColor == "") ? "rgb(0,0,0)" : cp.getMask.mask.style.backgroundColor;
       cp.getMask.mask.style.backgroundColor = cp_color;
-      s = (s>255) ? 255 : ((s<0) ? 0 :  s);
-      v = (v>255) ? 255 : ((v<0) ? 0 :  v);
+      s = (s>255) ? 255 : ((s<8) ? 0 :  s);
+      v = (v>255) ? 255 : ((v<8) ? 0 :  v);
       if(!coords){
         h = cp.conv.RGB2HSV(colorpicker.conv.CSScl2RGB(cp_color)).H
       }else{
         h = 360 - parseInt(coords.y);
         h = (coords.x > 90) ? (360 - h ) :  h;
       } 
-      h = (h>=360) ? 360 : ((h<0) ? 0 : h);
+      h = (h >= 357) ? 0 : ((h<1) ? 0 : h);
       console.log("H:" + h + " V: " + v + " S:"  +s)
+      console.log(cp.color)
       return {
         H: h, 
         V: v, 
