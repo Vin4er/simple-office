@@ -9,26 +9,7 @@
 
 
 
-/*
- create table
- @param: {
-    n: int  - cont row
-    m: int - cont column
-    attrib: srting - other attr4table
- }
- @return: string
-*/
-function createTable(n, m, attrib){
-  var tHTML = "";
-  for(var i = 0; i < n; i++){
-    tHTML +="<tr>";
-    for(var j = 0; j < m; j++){
-      tHTML +="<td  tr='"+i+"' td='"+j+"'></td>";
-    }
-    tHTML +="</tr>";
-  }
-  return "<table "+attrib.table+" ><tbody>"+tHTML+"</tbody></table><div>&nbsp;</div><div>&nbsp;</div>";
-}
+
 /*
   return user-browser
 */
@@ -73,13 +54,49 @@ var se = {
     buttons: {
     			'default': ['bold','italic', 'underline','justifyleft', 'justifycenter', 'justifyright','superscript', 'subscript','InsertUnorderedList','InsertOrderedList'],
     			'colorpicker': ['ForeColor', 'BackColor'],
-    			'font-type': [],
+    			'font-type': ["FontName", "FontSize"],
     			'table':[],
 	},
+	fontsName: ['Arial', 'Tahoma', 'Impact', 'Georgia', 'Courier', 'Verdana', 'Courier New', 'Times New Roman', 'Arial Black'],
+	// fontsSize = [],
+	/*create table
+	 @param: {
+	    size.n: int  - cont row
+	    size.m: int - cont column
+	    attrib: srting - other attr4table
+	 	style: string - styles table
+	 	val: value
+	 }
+	 @return: string
+	*/
+	createListsMenu: function(_tag, _class, _id, _array){
+		var list = "",
+		array_len = _array.length;
+		for(var i = 0; i<array_len; i++){
+			list += "<li style='font-family: " + _array[i] + "'>"+ _array[i] +"</li>";
+		}
+		return "<" + _tag + " id='" + _id + "' class='" + _class + "' >" + list + "</"+_tag+">"
+	},
+	createTable: function(size, attrib, style, val){
+		var tHTML = "",
+		ed = this;
+		for(var i = 0; i < size.n; i++){
+			tHTML +="<tr>";
+			for(var j = 0; j < size.m; j++){
+				tHTML +="<td style='" + ((style)?style:"") + "'  tr='"+i+"' td='"+j+"'>" + (val?val:"") + "</td>";
+			}
+			tHTML +="</tr>";
+		}
+		return "<table " + attrib + " ><tbody>"+tHTML+"</tbody></table>";
+	},
 	patterns: function(opt){
+		var ed  = this;
 		switch(opt.name){
 			case "CREATE-IFRAME-BODY":
 				return "<html><head><link rel='stylesheet' href='" + opt.s_outer + "' /><style>" + opt.s_inner + "</style></head><body contenteditable='true'><div></div></body></html>";
+				break;
+			case "BACKDROP":
+				return "<div class='backdrop'></div>"
 				break;
 			case "TOOLBAR":
 				return "<div class='toolbar' id='toolbar"+opt.id_r+"'></div><iframe class='iframe4e' id='" + opt.id_r + "' name='"+opt.id_r+"'></iframe>";
@@ -90,11 +107,22 @@ var se = {
 			case "DEFAULT-BUTTON-ON-TOOLBAR":
 				return "<input type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'>";
 				break;
+			case "FONTSIZE-BUTTON-ON-TOOLBAR":
+				return "<input type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'>";
+				break;
+			case "FONTNAME-BUTTON-ON-TOOLBAR":
+				var html = "<input type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'/>"  + ed.createListsMenu("ul", 'toggle', 'font-menu' , ed.fontsName);
+				return "<span class='fontname'>" + html + "</span>";
+				break;
+
 		}
-	},   	
-  find: function (elem){
-    return document.querySelectorAll(elem);
-  },
+	}, 
+	backdrop: function(d){
+		this.find('.backdrop')[0].style.display = d;
+	}, 	
+  	find: function (elem){
+    	return document.querySelectorAll(elem);
+  	},
 
 	/*
 	 return need attr
@@ -114,7 +142,23 @@ var se = {
 		for(var type in _t.buttons){
 			var b_l = _t.buttons[type].length;
 			for(var i=0; i<b_l; i++){
-				tHTML += _t.patterns({name:'DEFAULT-BUTTON-ON-TOOLBAR', t:type,  b: _t.buttons[type][i]});
+				var id = _t.buttons[type][i];
+				switch(type){
+					case "font-type":
+						switch(id){
+							case "FontSize":
+								patternName =  'FONTSIZE-BUTTON-ON-TOOLBAR';
+							break;
+							case "FontName":
+								patternName =  'FONTNAME-BUTTON-ON-TOOLBAR';
+							break;
+						}
+						break;
+					default:
+						patternName = 'DEFAULT-BUTTON-ON-TOOLBAR';
+						break;
+				}
+				tHTML += _t.patterns({name: patternName, t:type,  b: _t.buttons[type][i]});
 			}
 		}
     return tHTML;
@@ -167,21 +211,53 @@ var se = {
 			iDoc[item].open();  
 			iDoc[item].write(_t.patterns({name: "CREATE-IFRAME-BODY", s_outer: _t.cssOuter, s_inner: _t.cssInner}) );
 			iDoc[item].close();
-			_t.find("#toolbar"+id_r)[0].appendChild(_t.createElem(_t.patterns({name: "CREATE-PANEL-TOOLBAR", tb:_t.createToolbar() }) ));
-		  	_t.event({eName:'click', tagName:'input', obj:iWin[item]}, function(elem){
-		   	 	var $this = this;
-	   			if(_t.attr(elem, 'data-type') == 'default'){
-	   				_t.exec({this:$this, click: elem.id, bool:false, val: null})
+			_t.find('body')[0].appendChild(_t.createElem(_t.patterns({name: "BACKDROP"}) ))
+			_t.find("#toolbar"+id_r)[0].appendChild(_t.createElem(_t.patterns({name: "CREATE-PANEL-TOOLBAR", tb:_t.createToolbar() }) ))
+			_t.find('.backdrop')[0].onclick = function(){
+				this.style.display = "none"
+			  	var toggles = _t.find(".toggle");
+			 	for(var i=0; i< toggles.length; i++){
+			 		toggles[i].style.display = "none"
+			 	}
+
+			 	}
+
+		  	_t.event({eName:'click', tagName:'input', obj: iWin[item]}, function(elem){
+
+		   	 	var clicked = this,
+		   	 	dataType = _t.attr(elem, 'data-type');
+	   			if(dataType == 'default'){
+	   				_t.exec({this: clicked, click: elem.id, bool:false, val: null})
 	   			}
-	   			if(_t.attr(elem, 'data-type') == 'colorpicker'){						
+	   			if(dataType == 'colorpicker'){						
 	   				colorpicker.init({
    						what: [elem], 
    						css: ['backgroundColor'], 
    						func: function(){ //BackColor
-   							_t.exec({this:$this, click: elem.id, bool:false, val: this.color})			
+   							_t.exec({this: clicked, click: elem.id, bool: false, val: this.color})			
    						}
    					});
 	   				
+	   			}
+	   			if(dataType == "font-type"){
+	   				if(clicked.id = "FontName"){
+	   					var toggle = _t.find(".fontname .toggle")[0].style;
+	   					toggle.display = "block";
+						_t.backdrop("block");
+						var li = _t.find('#font-menu li'),
+						li_len = li.length;
+						for(var j = 0; j < li_len; j++){
+							li[j].onclick = function(){
+								_t.exec({this: clicked, click: elem.id, bool: false, val: this.style.fontFamily});
+ 								toggle.display = "none";
+   								_t.backdrop("none")
+   								elem.value = this.style.fontFamily;
+							}
+						}
+	   				}
+	   				if(clicked.id = "FontSize"){
+
+	   				}
 	   			}
 		   	})
 		}

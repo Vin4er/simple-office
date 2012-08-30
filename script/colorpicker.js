@@ -17,17 +17,16 @@ var colorpicker = {
   mdown: false,
   append: "body",
   class: {
-      wrap: 'c-p-wrap',
-      marker_wheel: "mark_wheel",
-      marker_mask: "mark_mask",
-      mask_wheel: "c-p_wheel",
-      mask_mask: "c-p_mask",
-      backdrop: "c-p-backdrop"
+    wrap: 'c-p-wrap',
+    marker_wheel: "mark_wheel",
+    marker_mask: "mark_mask",
+    mask_wheel: "c-p_wheel",
+    mask_mask: "c-p_mask",
+    backdrop: "c-p-backdrop"
   },
   getMarkers: {},
   getMask: {},
   delta: "",
-
   func: function(){},
 
  createElem: function(html) {
