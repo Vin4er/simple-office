@@ -101,9 +101,7 @@ body{background:rgba(0,0,0,.6);}
 
 .toolbar .fontsize{
 	float: left;
-	display: inline-block;
-	position: relative;
-	
+	display: inline-block;	
 }
 .toolbar .fontsize .fontsize-body{
 	/*background: white;*/

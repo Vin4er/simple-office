@@ -105,14 +105,14 @@ var se = {
 				return "<div class='tb_toogle' id='wrap_toolbar_first'>"+opt.tb+"</div>";
 				break;
 			case "DEFAULT-BUTTON-ON-TOOLBAR":
-				return "<input type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'>";
+				return "<input data-toolbar='btn-toolbar' type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'>";
 				break;
 			case "FONTSIZE-BUTTON-ON-TOOLBAR":
-				var html = "<span class='fontsize-body e_b'><a class='fontsize-marker'><div class='value'>7</div><div>пт</div></a></span>"
+				var html = "<span data-toolbar='btn-toolbar' data-type = '" + opt.t + "'   id='"+opt.b+"'  class='fontsize-body e_b'><a class='fontsize-marker'><div class='value'>1</div><div>пт</div></a></span>"
 				return "<span class='fontsize'>" + html + "</span>";
 				break;
 			case "FONTNAME-BUTTON-ON-TOOLBAR":
-				var html = "<input type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'/>"  + ed.createListsMenu("ul", 'toggle', 'font-menu' , ed.fontsName);
+				var html = "<input data-toolbar='btn-toolbar'  type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'/>"  + ed.createListsMenu("ul", 'toggle', 'font-menu' , ed.fontsName);
 				return "<span class='fontname'>" + html + "</span>";
 				break;
 
@@ -174,7 +174,25 @@ var se = {
 	find: function (elem){
   	return document.querySelectorAll(elem);
 	},
-
+ /*
+    Get mouse coords
+    @raturn:{
+      x: int,
+      y: int
+    }
+  */
+  getMouse: function(e){
+    e = e || window.event;
+    if (e.pageX == null && e.clientX != null ) {
+      var html = document.documentElement; var body = document.body
+      e.pageX = e.clientX + (html && html.scrollLeft || body && body.scrollLeft || 0) - (html.clientLeft || 0)
+      e.pageY = e.clientY + (html && html.scrollTop || body && body.scrollTop || 0) - (html.clientTop || 0)
+    }
+    return {
+      x: e.pageX,
+      y: e.pageY
+    }
+  },
 	/*
 	 return need attr
 	*/
@@ -193,59 +211,94 @@ var se = {
 	exec: function(ifr){
 		return  ifr.this.document.execCommand(ifr.click, ifr.bool, ifr.val);
 	},
-    // set event
-	event: function(options, func){
-		var _t = this;
-		_t.find("#toolbar"+ _t.id )[0]['on'+options.eName] = function(e){
-			var e = e || window.e,
-			target = e.target || e.srcElement;
-			while(target != this) {
-				if ((target.tagName).toLowerCase() == options.tagName) {
-					func.call(options.obj, target);
-				}
-				target = target.parentNode;
-			}
-		}
+	drag: function(){
+
 	},
+	event: function(elem, eventName, selectorFunc, handler) {
+      elem['on'+eventName] = function(e) {
+        var target = e && e.target || e.srcElement;
+        while(target != this) {
+          if (selectorFunc(target)) {
+            return handler.call(target, e);
+          }
+          target = target.parentNode;
+        }
+      }
+  },
+/*
+	handler click on button toolbar
+*/
 	handlerToolbar: function(iframe){
 		var ed = this;
-		// onclick on toolbar btn
-		ed.event({eName:'click', tagName:'input', obj: iframe}, function(elem){
-   	 	var clicked = elem,
-   	 	dataType = ed.attr(elem, 'data-type');
- 			if(dataType == 'default'){
- 				ed.exec({this: clicked, click: elem.id, bool:false, val: null})
- 			}
- 			if(dataType == 'colorpicker'){						
- 				colorpicker.init({
-						what: [elem], 
-						css: ['backgroundColor'], 
-						func: function(){ //BackColor
-							ed.exec({this: clicked, click: elem.id, bool: false, val: this.color})			
+		// onclick on toolbar btn				
+		ed.event(ed.find('.toolbar')[0], "mousedown", 
+			function(el){
+				return (ed.attr(el,"data-toolbar") == 'btn-toolbar')
+			},
+			function(e){
+	   	 	var clicked = this,
+	   	 	dataType = ed.attr(clicked , 'data-type');
+	 			if(dataType == 'default'){
+	 				ed.exec({this: iframe, click: clicked.id, bool:false, val: null})
+	 			}
+	 			// colorpicker
+	 			if(dataType == 'colorpicker'){		
+	 				console.log(dataType)				
+	 				colorpicker.init({
+							what: [clicked], 
+							css: ['backgroundColor'], 
+							func: function(){ //BackColor
+								ed.exec({this: iframe, click: clicked.id, bool: false, val: this.color})			
+							}
+						});			
+	 			}
+	 			if(dataType == "font-type"){ //if btn font setting
+	 				// font-family 
+	 				if(clicked.id == "FontName"){
+	 					var toggle = ed.find(".fontname .toggle")[0].style;
+	 					toggle.display = "block";
+						ed.backdrop("block");
+						var li = ed.find('#font-menu li'),
+						li_len = li.length;
+						for(var j = 0; j < li_len; j++){
+							li[j].onclick = function(){
+								ed.exec({this: iframe, click: clicked.id, bool: false, val: this.style.fontFamily});
+								ed.find('.backdrop')[0].onclick();// handler event  closeToggle() method
+								clicked.value = this.style.fontFamily;
+							}
 						}
-					});
- 				
- 			}
- 			if(dataType == "font-type"){ //if btn font setting
- 				if(clicked.id == "FontName"){
- 					var toggle = ed.find(".fontname .toggle")[0].style;
- 					toggle.display = "block";
-					ed.backdrop("block");
-					var li = ed.find('#font-menu li'),
-					li_len = li.length;
-					for(var j = 0; j < li_len; j++){
-						li[j].onclick = function(){
-						ed.exec({this: clicked, click: elem.id, bool: false, val: this.style.fontFamily});
-						ed.find('.backdrop')[0].onclick();// handler event  closeToggle() method
-						elem.value = this.style.fontFamily;
-					}
-				}
- 				}
- 				if(clicked.id == "FontSize"){
-							
- 				}
- 			}
-		})		
+	 				}
+	 				// changind font-size
+	 				if(clicked.id == "FontSize"){
+	 					ed.backdrop("block");
+	 					var marker= clicked.firstChild;
+	 					area = {
+	 						left: clicked.offsetLeft,
+	 						right: clicked.offsetWidth
+	 					},
+	 					setMarker = function(){
+	 						if(marker.offsetLeft >=0 && marker.offsetLeft <= area.right-marker.offsetWidth){
+	 					  	var new_left = ed.getMouse().x - area.left - marker.offsetWidth/2;
+	 					  	new_left = (new_left < 0) ? 0 : new_left
+	 					  	new_left = ((new_left >= area.right - marker.offsetWidth) ? (area.right-marker.offsetWidth ) : new_left)
+	 							marker.style.left = ((new_left < 0) ? 0 : new_left)  + "px";
+	 							var val = Math.round(marker.offsetLeft/9 + 1); 		
+	 							marker.firstChild.innerHTML =  val; 		
+	 							ed.exec({this: iframe, click: clicked.id, bool: false, val: val});
+	 						}
+	 					}
+	 					setMarker() 					  
+	 					document.body.onmousemove = function(e){
+	 						setMarker()
+	 					}
+	 					document.body.onmouseup = function(){
+	 						ed.find('.backdrop')[0].onclick();
+	 						ed.backdrop("none");
+	 						document.body.onmousemove = false;
+	 					}
+	 				}
+	 			}
+		});		
 	},
 	/*
 	*init text editor;

@@ -422,8 +422,8 @@ var colorpicker = {
         h = (coords.x > 90) ? (360 - h ) :  h;
       } 
       h = (h >= 357) ? 0 : ((h<1) ? 0 : h);
-      console.log("H:" + h + " V: " + v + " S:"  +s)
-      console.log(cp.color)
+      // console.log("H:" + h + " V: " + v + " S:"  +s)
+      // console.log(cp.color)
       return {
         H: h, 
         V: v, 
