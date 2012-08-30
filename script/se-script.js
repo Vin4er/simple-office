@@ -55,7 +55,7 @@ var se = {
     			'default': ['bold','italic', 'underline','justifyleft', 'justifycenter', 'justifyright','superscript', 'subscript','InsertUnorderedList','InsertOrderedList'],
     			'colorpicker': ['ForeColor', 'BackColor'],
     			'font-type': ["FontName", "FontSize"],
-    			'table':[],
+    			'table':[],// таблица убаляется и редактируется только визуально со всплывашками
 	},
 	fontsName: ['Arial', 'Tahoma', 'Impact', 'Georgia', 'Courier', 'Verdana', 'Courier New', 'Times New Roman', 'Arial Black'],
 	// fontsSize = [],
@@ -238,6 +238,8 @@ var se = {
 			function(e){
 	   	 	var clicked = this,
 	   	 	dataType = ed.attr(clicked , 'data-type');
+			document.body.onmouseup = false;
+			document.body.onmousemove = false;	
 	 			if(dataType == 'default'){
 	 				ed.exec({this: iframe, click: clicked.id, bool:false, val: null})
 	 			}
@@ -276,20 +278,18 @@ var se = {
 	 						left: clicked.offsetLeft,
 	 						right: clicked.offsetWidth
 	 					},
-	 					setMarker = function(){
-	 						if(marker.offsetLeft >=0 && marker.offsetLeft <= area.right-marker.offsetWidth){
-	 					  	var new_left = ed.getMouse().x - area.left - marker.offsetWidth/2;
-	 					  	new_left = (new_left < 0) ? 0 : new_left
-	 					  	new_left = ((new_left >= area.right - marker.offsetWidth) ? (area.right-marker.offsetWidth ) : new_left)
-	 							marker.style.left = ((new_left < 0) ? 0 : new_left)  + "px";
-	 							var val = Math.round(marker.offsetLeft/9 + 1); 		
-	 							marker.firstChild.innerHTML =  val; 		
-	 							ed.exec({this: iframe, click: clicked.id, bool: false, val: val});
-	 						}
+	 					setMarker = function(){				  	
+						  	var new_left = ed.getMouse().x - area.left - Math.round(marker.offsetWidth/2);
+						  	new_left = (new_left < 0) ? 0 : new_left
+						  	new_left = ((new_left+marker.offsetWidth >= area.right) ? (area.right-marker.offsetWidth ) : new_left)
+							marker.style.left = ((new_left < 0) ? 0 : new_left)  + "px";
+							var val = Math.round(marker.offsetLeft/9 + 1); 		
+							marker.firstChild.innerHTML =  val; 		
+							ed.exec({this: iframe, click: clicked.id, bool: false, val: val});
 	 					}
-	 					setMarker() 					  
+	 					setMarker(); 					  
 	 					document.body.onmousemove = function(e){
-	 						setMarker()
+	 						setMarker();
 	 					}
 	 					document.body.onmouseup = function(){
 	 						ed.find('.backdrop')[0].onclick();
