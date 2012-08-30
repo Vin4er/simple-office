@@ -108,7 +108,8 @@ var se = {
 				return "<input type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'>";
 				break;
 			case "FONTSIZE-BUTTON-ON-TOOLBAR":
-				return "<input type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'>";
+				var html = "<span class='fontsize-body e_b'><a class='fontsize-marker'><div class='value'>7</div><div>пт</div></a></span>"
+				return "<span class='fontsize'>" + html + "</span>";
 				break;
 			case "FONTNAME-BUTTON-ON-TOOLBAR":
 				var html = "<input type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'/>"  + ed.createListsMenu("ul", 'toggle', 'font-menu' , ed.fontsName);
@@ -117,37 +118,6 @@ var se = {
 
 		}
 	}, 
-	backdrop: function(d){
-		this.find('.backdrop')[0].style.display = d;
-	}, 	
-	/*
-colose backdrop and all .toggle
-	*/
-	closeToggle: function(){
-		var ed = this;
-		ed.find('.backdrop')[0].onclick = function(){
-			this.style.display = "none"
-		  var toggles = ed.find(".toggle");
-		 	for(var i=0; i< toggles.length; i++){
-		 		toggles[i].style.display = "none"
-		 	}
-		}
-	},
-	find: function (elem){
-  	return document.querySelectorAll(elem);
-	},
-
-	/*
-	 return need attr
-	*/
-	attr: function(el, attribute){
-	  return el.getAttribute(attribute)
-	},
- 	createElem: function(html) {
-    var container = document.createElement('div');
-    container.innerHTML = html;
-    return container.firstChild
-  },
   /*
 	building toolbar
 	@return: html text
@@ -180,6 +150,37 @@ colose backdrop and all .toggle
 		}
     return tHTML;
   },	
+	backdrop: function(d){
+		this.find('.backdrop')[0].style.display = d;
+	}, 	
+	/*
+	colose backdrop and all .toggle
+	*/
+	closeToggle: function(){
+		var ed = this;
+		ed.find('.backdrop')[0].onclick = function(){
+			this.style.display = "none"
+		  var toggles = ed.find(".toggle");
+		 	for(var i=0; i< toggles.length; i++){
+		 		toggles[i].style.display = "none"
+		 	}
+		}
+	},
+ 	createElem: function(html) {
+    var container = document.createElement('div');
+    container.innerHTML = html;
+    return container.firstChild
+  },
+	find: function (elem){
+  	return document.querySelectorAll(elem);
+	},
+
+	/*
+	 return need attr
+	*/
+	attr: function(el, attribute){
+	  return el.getAttribute(attribute)
+	},
   /* execComand
 		@param:
 			ifr:object{
@@ -206,7 +207,46 @@ colose backdrop and all .toggle
 			}
 		}
 	},
-
+	handlerToolbar: function(iframe){
+		var ed = this;
+		// onclick on toolbar btn
+		ed.event({eName:'click', tagName:'input', obj: iframe}, function(elem){
+   	 	var clicked = elem,
+   	 	dataType = ed.attr(elem, 'data-type');
+ 			if(dataType == 'default'){
+ 				ed.exec({this: clicked, click: elem.id, bool:false, val: null})
+ 			}
+ 			if(dataType == 'colorpicker'){						
+ 				colorpicker.init({
+						what: [elem], 
+						css: ['backgroundColor'], 
+						func: function(){ //BackColor
+							ed.exec({this: clicked, click: elem.id, bool: false, val: this.color})			
+						}
+					});
+ 				
+ 			}
+ 			if(dataType == "font-type"){ //if btn font setting
+ 				if(clicked.id == "FontName"){
+ 					var toggle = ed.find(".fontname .toggle")[0].style;
+ 					toggle.display = "block";
+					ed.backdrop("block");
+					var li = ed.find('#font-menu li'),
+					li_len = li.length;
+					for(var j = 0; j < li_len; j++){
+						li[j].onclick = function(){
+						ed.exec({this: clicked, click: elem.id, bool: false, val: this.style.fontFamily});
+						ed.find('.backdrop')[0].onclick();// handler event  closeToggle() method
+						elem.value = this.style.fontFamily;
+					}
+				}
+ 				}
+ 				if(clicked.id == "FontSize"){
+							
+ 				}
+ 			}
+		})		
+	},
 	/*
 	*init text editor;
 	*create iframe, toolbar;
@@ -228,48 +268,11 @@ colose backdrop and all .toggle
 			iDoc[item].open();  
 			iDoc[item].write(ed.patterns({name: "CREATE-IFRAME-BODY", s_outer: ed.cssOuter, s_inner: ed.cssInner}) );
 			iDoc[item].close();
+			//create .backdrop and toolbar
 			ed.find('body')[0].appendChild(ed.createElem(ed.patterns({name: "BACKDROP"}) ))
 			ed.find("#toolbar"+id_r)[0].appendChild(ed.createElem(ed.patterns({name: "CREATE-PANEL-TOOLBAR", tb: ed.createToolbar() }) ));
 			ed.closeToggle(); // attached "onclick" for close toggle class and backdrop
-			// onclick on toolbar btn
-		  ed.event({eName:'click', tagName:'input', obj: iWin[item]}, function(elem){
-		   	 	var clicked = this,
-		   	 	dataType = ed.attr(elem, 'data-type');
-	   			if(dataType == 'default'){
-	   				ed.exec({this: clicked, click: elem.id, bool:false, val: null})
-	   			}
-	   			if(dataType == 'colorpicker'){						
-	   				colorpicker.init({
-   						what: [elem], 
-   						css: ['backgroundColor'], 
-   						func: function(){ //BackColor
-   							ed.exec({this: clicked, click: elem.id, bool: false, val: this.color})			
-   						}
-   					});
-	   				
-	   			}
-	   			if(dataType == "font-type"){
-	   				if(clicked.id = "FontName"){
-	   					var toggle = ed.find(".fontname .toggle")[0].style;
-	   					toggle.display = "block";
-							ed.backdrop("block");
-							var li = ed.find('#font-menu li'),
-							li_len = li.length;
-							for(var j = 0; j < li_len; j++){
-								li[j].onclick = function(){
-								ed.exec({this: clicked, click: elem.id, bool: false, val: this.style.fontFamily});
-								// handler event  closeToggle() method
-								ed.find('.backdrop')[0].onclick();
-
-   							elem.value = this.style.fontFamily;
-							}
-						}
-	   				}
-	   				if(clicked.id = "FontSize"){
-    						
-	   				}
-	   			}
-		   	})
+			ed.handlerToolbar(iWin[item]); // attached "onclick" for btn on toolbar
 		}
 
 	}

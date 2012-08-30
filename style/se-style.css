@@ -99,6 +99,38 @@ body{background:rgba(0,0,0,.6);}
 	border-bottom: 1px solid #CCC;
 }
 
+.toolbar .fontsize{
+	float: left;
+	display: inline-block;
+	position: relative;
+	
+}
+.toolbar .fontsize .fontsize-body{
+	/*background: white;*/
+	position: relative;
+	display: block;	
+	height: 31px;
+	width: 70px;
+}
+.toolbar .fontsize  .value{
+
+}
+.toolbar .fontsize a.fontsize-marker{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	display: block;
+	width: 16px;
+	height: 100%;
+	border: 1px solid black;
+	cursor: pointer;
+}
+.toolbar .fontsize a.fontsize-marker div.value{
+	font-weight: bold;
+}
+.toolbar .fontsize a.fontsize-marker div{
+	text-align: center;
+}
 
 .toolbar #isrt_table{background: url(../icons/icons.png) no-repeat; background-position: -160px;}
 .toolbar #addTable{background: url(../icons/icons.png) no-repeat; background-position: -992px;}
