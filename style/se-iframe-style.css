@@ -2,26 +2,21 @@
 /******************
 	style in iframe
 *******************/
-
-
-
-
 .iWinTable {
-	border: 1px solid maroon;
+	border: 1px solid black;
 	margin: 5px;
 	border-collapse: collapse;
-
 }
-.iWinTable td{	border: 1px solid maroon;
+.iWinTable td{
+	border: 1px solid black;
 	text-align: left;
 }
-
 .iWinTable .wrap_text {
 	min-height: 30px;
 	padding: 2px 5px;
 	min-width: 50px;
+	max-width: 50px;
 }
-
 .iWinTable .td_wrap_text {
 	word-wrap: break-word;
 }

@@ -234,8 +234,9 @@ function table_fix(){ /*Возможны баги при удалении тек
                     fix_td[tx].setAttribute('tr',ty); fix_td[tx].setAttribute('td',tx);
                     if(fix_td[tx].querySelectorAll(".wrap_text").length<=0 ){
                     	fix_td[tx].innerHTML = "<div  class='wrap_text'  style='min-height:30px; width:"+(el('#toolbar').offsetWidth/fix_td.length-30)+"px'  tr='"+ty+"'  td='"+tx+"' ><div class='td_wrap_text' >"+ fix_td[tx].innerHTML+"&nbsp;</div></div>"
-	                }fix_td[tx].onmousemove = function(e){setResizeTable(e,this); }
-	                 fix_td[tx].onmousedown = function(e){ active_TD = this;}
+	                }
+	                fix_td[tx].onmousemove = function(e){setResizeTable(e,this); }
+	                fix_td[tx].onmousedown = function(e){ active_TD = this;}
 	        	}
 	        }
 	   }

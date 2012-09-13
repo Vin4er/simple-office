@@ -43,12 +43,12 @@ function genRandId(symb_len){
 /******************************************/
 var se = {	
 	cssOuter: "style/se-iframe-style.css",
-	cssInner: "body {background:#fff; width:960px;display:block; min-height:1140px;word-wrap: break-word; color:maroon; font-family: Arial; font-size:  medium} p{margin:0px; word-wrap: break-word; } div{word-wrap: break-word; } a{cursor:pointer}",
+	cssInner: "body {background:#fff; width:960px; display:block; min-height:1140px;word-wrap: break-word; color: black; font-family: Arial; font-size:  medium} p{margin:0px; word-wrap: break-word; } div{word-wrap: break-word; } a{cursor:pointer}",
     buttons: {
     			'default': ['bold','italic', 'underline','justifyleft', 'justifycenter', 'justifyright','superscript', 'subscript','InsertUnorderedList','InsertOrderedList'],
     			'colorpicker': ['ForeColor', 'BackColor'],
     			'font-type': ["FontName", "FontSize"],
-    			'table':[],// таблица удаляется и редактируется только визуально со всплывашками
+    			'table': ['insert-table'],// таблица удаляется и редактируется только визуально со всплывашками
 	},
 	/*style for toolbar pushed and unpushed button*/
 	pushed: {
@@ -120,9 +120,16 @@ var se = {
 				var html = "<span data-toolbar='btn-toolbar' data-type = '" + opt.t + "'   id='"+opt.b+"'  class='fontsize-body e_b'><a class='fontsize-marker'><div class='value'>1</div><div class='pt'>пт</div></a></span>"
 				return "<span class='fontsize'>" + html + "</span>";
 				break;
+			case "COLORPICKER-BUTTON-ON-TOOLBAR":
+				return "<span data-toolbar='btn-toolbar' data-type = '" + opt.t + "' id='"+opt.b+"'  class='colorpicker-open-btn e_b'><div></div></span>";
+				break;			
 			case "FONTNAME-BUTTON-ON-TOOLBAR":
 				var html = "<input data-toolbar='btn-toolbar'  type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'/>"  + ed.createListsMenu("ul", 'toggle', 'font-menu', ed.fontsName);
 				return "<span class='fontname'>" + html + "</span>";
+				break;			
+			case "TABLE-ADD-BUTTON-ON-TOOLBAR":
+				var html = "<input data-toolbar='btn-toolbar'  type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'/>"  + ed.createTable({n: 8, m: 8}, "class='toggle add-table-se'", "", "");
+				return "<span class='insert-table'>" + html + "</span>";
 				break;
 		}
 	}, 
@@ -147,10 +154,16 @@ var se = {
 								patternName =  'FONTNAME-BUTTON-ON-TOOLBAR';
 							break;
 						}
-						break;
+					break;
+					case "colorpicker":
+						patternName = "COLORPICKER-BUTTON-ON-TOOLBAR";
+					break;	
+					case "table":
+						patternName = "TABLE-ADD-BUTTON-ON-TOOLBAR";
+					break;	
 					default:
 						patternName = 'DEFAULT-BUTTON-ON-TOOLBAR';
-						break;
+					break;
 				}
 				tHTML += _t.patterns({name: patternName, t:type,  b: _t.buttons[type][i]});
 			}
@@ -248,6 +261,87 @@ var se = {
         }
       }
   	},
+  	tableEdit: function(win){
+  		var ed = this,
+  		fTable = win.document.querySelectorAll("table"),
+  		fTable_size = fTable.length,
+  		removeLine = function(){
+  			var lines = document.querySelectorAll(".help-table-line") 
+  			for(var i = 0; i< lines.length; i++){
+ 					document.body.removeChild(lines[i]);
+  			}
+  		},
+  		createLine = function(opt){
+  			removeLine();
+  			opt.w = (opt.b == "bottom")?"50%" : "1px";
+  			opt.h = (opt.b == "right")?"50%" : "1px";
+
+  			return '<div class="help-table-line" type="' + opt.b + '"  style="left:' + opt.l + ' ; top:'+ opt.t +' ;width: ' + opt.w + '; height: ' + opt.h + '; border-' + opt.b + ':2px solid black;"></div>'
+  		}
+
+  		for(var i = 0; i < fTable_size; i++){
+  			ed.event(win.document, "mouseover", 
+  				function(elem){
+  					var tag = elem.tagName.toLowerCase(),
+  					type = elem.getAttribute('type')
+  					return (tag == "td")
+  				},
+  				function(e){
+  					var moved = this,
+  					cursor = ["default", "e-resize", "s-resize"]
+  					setBodyCursor = function(type){
+							win.document.body.style.cursor = type;
+  					},
+  					moveCoord = {
+  						r: moved.offsetLeft + moved.offsetWidth  , // bottom
+  						b: moved.offsetTop + moved.offsetHeight,   // right
+  					}
+  					var caseCursor = 0;		
+  					if( moveCoord.r + 20 >= ed.getMouse(e).x && ed.getMouse(e).x > moveCoord.r ){
+							caseCursor = 1;
+						}else{
+							caseCursor = 0
+							if( moveCoord.b >= ed.getMouse(e).y  && ed.getMouse(e).y > moveCoord.b-30 ){
+								caseCursor = 2
+							}else{
+								caseCursor = 0;
+							}	  					
+						}
+						setBodyCursor(cursor[caseCursor]);
+						
+  					win.document.onmousedown = function(e){
+
+							var line = ed.createElem(createLine({b: ((caseCursor==1)?"right":"bottom"), l: ed.getMouse(e).x+ "px" , t: ed.getMouse(e).y+ "px" }));						
+							document.body.appendChild(line);
+							line = document.querySelectorAll(".help-table-line")[0];
+							
+							var setCoordonLine = function(c){
+							if(line.getAttribute('type') == "bottom"){
+									line.style.top = parseInt(c.y+ ed.find("#toolbar"+ed.id)[0].offsetTop ) +  "px";
+								}
+								if(line.getAttribute('type') == "right"){
+									line.style.left = parseInt(c.x + ed.find("#toolbar"+ed.id)[0].offsetLeft) +"px";
+								}
+							}
+							ed.backdrop('block')
+							setCoordonLine(ed.getMouse(e));
+  						 win.document.onmousemove = function(e){
+  						 			setCoordonLine(ed.getMouse(e));
+  						 }
+  						 	win.document.onmouseup = function(){
+  						 		ed.backdrop('none')
+  						 		setCoordonLine(ed.getMouse(e));
+  								setBodyCursor(cursor[0]);
+  								document.onmousemove = false;
+  					 			win.document.onmousedown = false;
+  								removeLine();
+  					 	}
+
+	  				}
+  				}
+  			)
+  		}
+  	},
 	/*handler click on button toolbar*/
 	handlerToolbar: function(opt){
 		var ed = this;
@@ -264,11 +358,29 @@ var se = {
 	 			if(dataType == 'default'){
 	 				ed.exec({this: opt.win, click: clicked.id, bool:false, val: null})
 	 			}
+	 			// add table
+	 			if(dataType == 'table'){		
+	 				ed.find(".toolbar .insert-table .add-table-se")[0].style.display = "table";
+					ed.backdrop("block");
+					var td = ed.find(".toolbar .insert-table .add-table-se td"),
+					td_size = td.length;
+					for(var i = 0; i < td_size; i++){
+						td[i].onmousedown = function(){
+							var clicktd = this;
+							var ins_table = ed.createTable({n: parseInt(clicktd.getAttribute('tr'))+1, m: parseInt(clicktd.getAttribute('td'))+1}, "class='iWinTable'", "", "<div class='wrap_text '></div>")
+     						// opt.win.document.body.focus(); //iWin.document.execCommand('InsertHtml','', ins_table);
+							ed.exec({this: opt.win, click: 'InsertHtml', bool: '', val: ins_table})	
+							ed.find('.backdrop')[0].onclick(); 
+							ed.tableEdit(opt.win);    						
+						}	
+					}
+					
+	 			}
 	 			// colorpicker
 	 			if(dataType == 'colorpicker'){		
-	 				console.log(dataType)				
+	 				// console.log(dataType)				
 	 				colorpicker.init({
-							what: [clicked], 
+							what: [clicked.firstChild], 
 							css: ['backgroundColor'], 
 							func: function(){ //BackColor
 								ed.exec({this: opt.win, click: clicked.id, bool: false, val: this.color})			
@@ -365,7 +477,7 @@ var se = {
 						break; 
 						/*@colorpicker buttons*/
 						case 'colorpicker': 
-								btn.style.backgroundColor = getEX;
+								btn.firstChild.style.backgroundColor = getEX;
 						break;
 					}
 				}	

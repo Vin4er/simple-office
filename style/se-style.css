@@ -45,22 +45,68 @@ body{background:rgba(0,0,0,.6);}
 .toolbar *{cursor:pointer}
 
 
-.toolbar #bold{background: url(../icons/icons.png) no-repeat; background-position: -352px;}
-.toolbar #underline{ background: url(../icons/icons.png) no-repeat; background-position: -960px;}
-.toolbar #italic{background: url(../icons/icons.png) no-repeat; background-position: -384px;}
-.toolbar #justifyleft{background: url(../icons/icons.png) no-repeat; background-position: -512px;}
-.toolbar #justifycenter{background: url(../icons/icons.png) no-repeat; background-position: -544px;}
-.toolbar #justifyright{background: url(../icons/icons.png) no-repeat; background-position: -576px;}
-.toolbar #ForeColor{background: url(../icons/icons.png) no-repeat; background-position: -64px;}
-.toolbar #BackColor{background: url(../icons/icons.png) no-repeat; background-position: -704px;}
+.toolbar #bold{
+	background: url(../icons/icons.png) no-repeat; 
+	background-position: -352px;
+}
+.toolbar #underline{ 
+	background: url(../icons/icons.png) no-repeat; 
+	background-position: -960px;
+}
+.toolbar #italic{
+	background: url(../icons/icons.png) no-repeat; 
+	background-position: -384px;
+}
+.toolbar #justifyleft{
+	background: url(../icons/icons.png) no-repeat; 
+	background-position: -512px;
+}
+.toolbar #justifycenter{
+	background: url(../icons/icons.png) no-repeat; 
+	background-position: -544px;
+}
+.toolbar #justifyright{
+	background: url(../icons/icons.png) no-repeat; 
+	background-position: -576px;
+}
+
+.toolbar #ForeColor{
+	background: url(../icons/icons.png) no-repeat;
+	background-position: -64px;
+	height: 22px
+
+}
+.toolbar #BackColor{
+	background: url(../icons/icons.png) no-repeat; 
+	background-position: -704px;
+	height: 22px
+}
+.toolbar #ForeColor>div, .toolbar #BackColor>div {
+	width: 34px;
+	height: 5px;
+	background-color: #FFE592;
+	position: relative;
+	top: 24px;
+}
+
+
 .toolbar #link{ background: url(../icons/icons.png) no-repeat; background-position: -192px;}
 .toolbar #image{ background: url(../icons/icons.png) no-repeat; background-position: -128px;}
 .toolbar #superscript{ background: url(../icons/icons.png) no-repeat; background-position: -416px;}
 .toolbar #subscript{ background: url(../icons/icons.png) no-repeat; background-position: -448px;}
 .toolbar #InsertOrderedList{ background: url(../icons/icons.png) no-repeat; background-position: -768px;}
-.toolbar #InsertUnorderedList{ background: url(../icons/icons.png) no-repeat; background-position: -896px;}
-.toolbar #outdent{ background: url(../icons/icons.png) no-repeat; background-position: -608px;}
-.toolbar #indent{ background: url(../icons/icons.png) no-repeat; background-position: -640px;}
+.toolbar #InsertUnorderedList{ 
+	background: url(../icons/icons.png) no-repeat; 
+	background-position: -896px;
+}
+.toolbar #outdent{
+	 background: url(../icons/icons.png) no-repeat; 
+	 background-position: -608px;
+}
+.toolbar #indent{ 
+	background: url(../icons/icons.png) no-repeat; 
+	background-position: -640px;
+}
 
 .toolbar .fontname{	
 	display: inline-block; 
@@ -141,7 +187,40 @@ body{background:rgba(0,0,0,.6);}
 	cursor: e-resize;
 }
 
-.toolbar #isrt_table{background: url(../icons/icons.png) no-repeat; background-position: -160px;}
+
+
+
+.toolbar #insert-table{
+	background: url(../icons/icons.png) no-repeat; 
+	background-position: -160px;
+}
+.toolbar .insert-table{
+	text-align: center;
+	cursor: e-resize;
+}
+.toolbar .insert-table .add-table-se{
+	display: none;
+	width: 200px;
+	height: 135px;
+	position: relative;
+	left: -35px;
+	top: 35px;
+	z-index: 9999999;
+}
+.toolbar .insert-table .add-table-se td{
+	padding: 0px;
+	border: 1px solid gray;
+}
+.toolbar .insert-table .add-table-se td:hover{
+	background: gray;
+}
+.help-table-line{
+	position: absolute;
+	z-index: 999999999; 
+}
+
+
+
 .toolbar #addTable{background: url(../icons/icons.png) no-repeat; background-position: -992px;}
 .toolbar #addRowBottom{background: url(../icons/icons.png) no-repeat; background-position: -1056px;}
 .toolbar #addRowTop{background: url(../icons/icons.png) no-repeat; background-position: -1024px;}
@@ -191,7 +270,7 @@ body{background:rgba(0,0,0,.6);}
 	position: absolute; 
 	background: #ebecef;
 	z-index: 2500;
-		-webkit-box-shadow:  0px 3px 10px rgba(0,0,0,.6);
+	-webkit-box-shadow:  0px 3px 10px rgba(0,0,0,.6);
 	-moz-box-shadow:	 0px 3px 10px rgba(0,0,0,.6);
 	box-shadow:			 0px 3px 10px rgba(0,0,0,.6);
 }

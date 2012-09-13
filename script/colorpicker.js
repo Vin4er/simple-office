@@ -97,8 +97,8 @@ var colorpicker = {
     cp.what = opt.what;
     cp.css = opt.css; 
     cp.func = opt.func;
-    col_s.top = (cp.what[0].offsetTop+cp.what[0].offsetHeight) + cp.offsetTop +"px";
-    col_s.left = cp.what[0].offsetLeft+"px";    
+    col_s.top = (cp.what[0].offsetTop + cp.what[0].offsetHeight) + cp.offsetTop +"px";
+    col_s.left = cp.what[0].offsetLeft + "px";    
     append.appendChild(color);    
     append.appendChild(backdrop);
     cp.getMarkers = {
@@ -127,8 +127,8 @@ var colorpicker = {
     what_leng = what.length,
     css = cp.css,
     css_leng = css.length;
-    for(var i=0; i<what_leng; i++){   
-      for(var j=0; j<css_leng; j++){
+    for(var i = 0; i < what_leng; i++){   
+      for(var j  = 0; j < css_leng; j++){
         cp.what[i].style[cp.css[j]] = color;
       }
     }
@@ -164,7 +164,6 @@ var colorpicker = {
         x: parseInt(Math.abs(x - cp.radius)),
         y: parseInt(Math.abs(y - cp.radius)),
       }
-      console.log(cp.find("." + cp.class.mask_maskColor))
       cp.getMask.maskColor.style.backgroundColor = "#"+cp.conv.RGB2Hex(cp.conv.HSV2RGB({S:255, V:255,H:cp.conv.calcHSV(coord).H}))
       cp.color =  "#"+cp.conv.RGB2Hex(cp.conv.HSV2RGB(cp.conv.calcHSV(coord)))
     }else{
@@ -222,7 +221,7 @@ var colorpicker = {
     );  
     cp.event( document.body, 'mousedown', // drag markers - events
       function(el){ 
-        return ((el.className == cp.class.mask_mask) ||(el.className == cp.class.marker_wheel)||(el.className == cp.class.marker_mask) || (el.className ==  cp.class.mask_wheelColor));
+        return ((el.className == cp.class.mask_mask) || (el.className ==  cp.class.mask_wheelColor));
       }, 
       function(){
         var classname = this.className;
