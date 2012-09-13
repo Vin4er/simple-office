@@ -9,6 +9,7 @@
 
 
 var colorpicker = {
+  offsetTop: 5, // offset top position colorpicker
   what: '',
   position: {},
   color: "",
@@ -21,7 +22,9 @@ var colorpicker = {
     marker_wheel: "mark_wheel",
     marker_mask: "mark_mask",
     mask_wheel: "c-p_wheel",
+    mask_wheelColor: "c-p_wheel-color",
     mask_mask: "c-p_mask",
+    mask_maskColor: "c-p_mask-color",
     backdrop: "c-p-backdrop"
   },
   getMarkers: {},
@@ -41,7 +44,7 @@ var colorpicker = {
     var cp = this;
     switch(opt){
       case "cp": 
-        return "<div class='" + cp.class.wrap + "'><div  class='" + cp.class.mask_wheel + "'><div class='" + cp.class.marker_wheel + "' data-type-math='circle'></div></div><div class='" + cp.class.mask_mask + "'><div class='" + cp.class.marker_mask + "'  data-type-math='square'></div></div></div>"
+        return "<div class='" + cp.class.wrap + "'><div  class='" + cp.class.mask_wheelColor + "'></div><div class='" + cp.class.mask_mask + "'></div><div  class='" + cp.class.mask_wheel + "'><div class='" + cp.class.marker_wheel + "' data-type-math='circle'></div></div><div class='" + cp.class.mask_maskColor + "'><div class='" + cp.class.marker_mask + "'  data-type-math='square'></div></div>"
         break;
       case "backdrop":
         return "<div class='" + cp.class.backdrop+ "'></div>"
@@ -94,7 +97,7 @@ var colorpicker = {
     cp.what = opt.what;
     cp.css = opt.css; 
     cp.func = opt.func;
-    col_s.top = (cp.what[0].offsetTop+cp.what[0].offsetHeight) +"px";
+    col_s.top = (cp.what[0].offsetTop+cp.what[0].offsetHeight) + cp.offsetTop +"px";
     col_s.left = cp.what[0].offsetLeft+"px";    
     append.appendChild(color);    
     append.appendChild(backdrop);
@@ -105,9 +108,10 @@ var colorpicker = {
     cp.getMask = {
       wheel: cp.find("." + cp.class.mask_wheel)[0],
       mask: cp.find("." + cp.class.mask_mask)[0],
+      maskColor: cp.find("." + cp.class.mask_maskColor)[0],
     };
     cp.delta = Math.round(cp.getMarkers.wheel.offsetWidth/2),
-    cp.radius = (cp.getMask.wheel.offsetWidth/2-cp.delta);
+    cp.radius = (cp.getMask.wheel.offsetWidth/2 - cp.delta);
     cp.color = cp.what[0].style[cp.css[0]] || '#ffffff';
     cp._setColor();
     cp._drag();
@@ -160,7 +164,8 @@ var colorpicker = {
         x: parseInt(Math.abs(x - cp.radius)),
         y: parseInt(Math.abs(y - cp.radius)),
       }
-      cp.getMask.mask.style.backgroundColor = "#"+cp.conv.RGB2Hex(cp.conv.HSV2RGB({S:255, V:255,H:cp.conv.calcHSV(coord).H}))
+      console.log(cp.find("." + cp.class.mask_maskColor))
+      cp.getMask.maskColor.style.backgroundColor = "#"+cp.conv.RGB2Hex(cp.conv.HSV2RGB({S:255, V:255,H:cp.conv.calcHSV(coord).H}))
       cp.color =  "#"+cp.conv.RGB2Hex(cp.conv.HSV2RGB(cp.conv.calcHSV(coord)))
     }else{
     // rect
@@ -217,7 +222,7 @@ var colorpicker = {
     );  
     cp.event( document.body, 'mousedown', // drag markers - events
       function(el){ 
-        return ((el.className == cp.class.mask_mask) || (el.className ==  cp.class.mask_wheel));
+        return ((el.className == cp.class.mask_mask) ||(el.className == cp.class.marker_wheel)||(el.className == cp.class.marker_mask) || (el.className ==  cp.class.mask_wheelColor));
       }, 
       function(){
         var classname = this.className;
@@ -411,8 +416,8 @@ var colorpicker = {
       s = Math.round((cp.getMarkers.mask.offsetLeft+cp.delta)*255/cp.radius),
       v = Math.round(Math.abs(cp.getMarkers.mask.offsetTop-cp.radius)*255/cp.radius),
       h = false,  
-      cp_color = (cp.getMask.mask.style.backgroundColor == "") ? "rgb(0,0,0)" : cp.getMask.mask.style.backgroundColor;
-      cp.getMask.mask.style.backgroundColor = cp_color;
+      cp_color = (cp.getMask.maskColor.style.backgroundColor == "") ? "rgb(0,0,0)" : cp.getMask.maskColor.style.backgroundColor;
+      cp.getMask.maskColor.style.backgroundColor = cp_color;
       s = (s>255) ? 255 : ((s<8) ? 0 :  s);
       v = (v>255) ? 255 : ((v<8) ? 0 :  v);
       if(!coords){

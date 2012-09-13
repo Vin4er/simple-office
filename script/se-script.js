@@ -8,11 +8,7 @@
  */
 
 
-
-
-/*
-  return user-browser
-*/
+/*return user-browser*/
 function browser(){
   var ua = navigator.userAgent;
   if (ua.search(/MSIE/) > 0) return 'IE';
@@ -25,15 +21,12 @@ function browser(){
 }
 
 
-/*
-  return random number (max; min)
-*/
+/*return random number (max; min)*/
 function getRandomInt(min, max){
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-/*
-  generate unique ID
+/*generate unique ID
   @param: 
     symb_len: int - count symbols on return id
   @return: string
@@ -50,15 +43,39 @@ function genRandId(symb_len){
 /******************************************/
 var se = {	
 	cssOuter: "style/se-iframe-style.css",
-	cssInner: "body {background:#fff; width:960px;display:block; min-height:1140px;word-wrap: break-word; color:maroon; font-family:tahoma; font-size:12px; } p{margin:0px; word-wrap: break-word; } div{word-wrap: break-word; } a{cursor:pointer}",
+	cssInner: "body {background:#fff; width:960px;display:block; min-height:1140px;word-wrap: break-word; color:maroon; font-family: Arial; font-size:  medium} p{margin:0px; word-wrap: break-word; } div{word-wrap: break-word; } a{cursor:pointer}",
     buttons: {
     			'default': ['bold','italic', 'underline','justifyleft', 'justifycenter', 'justifyright','superscript', 'subscript','InsertUnorderedList','InsertOrderedList'],
     			'colorpicker': ['ForeColor', 'BackColor'],
     			'font-type': ["FontName", "FontSize"],
-    			'table':[],// таблица убаляется и редактируется только визуально со всплывашками
+    			'table':[],// таблица удаляется и редактируется только визуально со всплывашками
+	},
+	/*style for toolbar pushed and unpushed button*/
+	pushed: {
+		css: "outline",
+		val: "1px solid black",
+		def: "none"
 	},
 	fontsName: ['Arial', 'Tahoma', 'Impact', 'Georgia', 'Courier', 'Verdana', 'Courier New', 'Times New Roman', 'Arial Black'],
-	// fontsSize = [],
+
+
+	/*create menu "font-family"
+	@param: {
+		_tag: string - "ol" or "ul",
+		_class: string - classes of list
+		_id: string - ID of list
+		_array: array of value
+	}	
+	@return: string
+	*/
+	createListsMenu: function(_tag, _class, _id, _array){
+		var list = "",
+		array_len = _array.length;
+		for(var i = 0; i<array_len; i++){
+			list += "<li style='font-family: " + _array[i] + "'>"+ _array[i] +"</li>";
+		}
+		return "<" + _tag + " id='" + _id + "' class='" + _class + "' >" + list + "</"+_tag+">"
+	},
 	/*create table
 	 @param: {
 	    size.n: int  - cont row
@@ -69,21 +86,13 @@ var se = {
 	 }
 	 @return: string
 	*/
-	createListsMenu: function(_tag, _class, _id, _array){
-		var list = "",
-		array_len = _array.length;
-		for(var i = 0; i<array_len; i++){
-			list += "<li style='font-family: " + _array[i] + "'>"+ _array[i] +"</li>";
-		}
-		return "<" + _tag + " id='" + _id + "' class='" + _class + "' >" + list + "</"+_tag+">"
-	},
 	createTable: function(size, attrib, style, val){
 		var tHTML = "",
 		ed = this;
 		for(var i = 0; i < size.n; i++){
 			tHTML +="<tr>";
 			for(var j = 0; j < size.m; j++){
-				tHTML +="<td style='" + ((style)?style:"") + "'  tr='"+i+"' td='"+j+"'>" + (val?val:"") + "</td>";
+				tHTML +="<td style='" + ((style) ? style : "") + "'  tr='" + i + "' td='" + j + "'>" + (val ? val : "") + "</td>";
 			}
 			tHTML +="</tr>";
 		}
@@ -108,21 +117,19 @@ var se = {
 				return "<input data-toolbar='btn-toolbar' type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'>";
 				break;
 			case "FONTSIZE-BUTTON-ON-TOOLBAR":
-				var html = "<span data-toolbar='btn-toolbar' data-type = '" + opt.t + "'   id='"+opt.b+"'  class='fontsize-body e_b'><a class='fontsize-marker'><div class='value'>1</div><div>пт</div></a></span>"
+				var html = "<span data-toolbar='btn-toolbar' data-type = '" + opt.t + "'   id='"+opt.b+"'  class='fontsize-body e_b'><a class='fontsize-marker'><div class='value'>1</div><div class='pt'>пт</div></a></span>"
 				return "<span class='fontsize'>" + html + "</span>";
 				break;
 			case "FONTNAME-BUTTON-ON-TOOLBAR":
-				var html = "<input data-toolbar='btn-toolbar'  type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'/>"  + ed.createListsMenu("ul", 'toggle', 'font-menu' , ed.fontsName);
+				var html = "<input data-toolbar='btn-toolbar'  type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'/>"  + ed.createListsMenu("ul", 'toggle', 'font-menu', ed.fontsName);
 				return "<span class='fontname'>" + html + "</span>";
 				break;
-
 		}
 	}, 
-  /*
-	building toolbar
-	@return: html text
-  */
-  createToolbar: function(){
+	/*building toolbar
+		@return: html text
+	*/
+  	createToolbar: function(){
 		var _t = this,
 		tHTML = '',
 		tb = _t.find("#toolbar"+_t.id)[0];
@@ -148,14 +155,13 @@ var se = {
 				tHTML += _t.patterns({name: patternName, t:type,  b: _t.buttons[type][i]});
 			}
 		}
-    return tHTML;
-  },	
+   		return tHTML;
+  	},	
 	backdrop: function(d){
 		this.find('.backdrop')[0].style.display = d;
 	}, 	
-	/*
-	colose backdrop and all .toggle
-	*/
+
+	/*colose backdrop and all .toggle*/
 	closeToggle: function(){
 		var ed = this;
 		ed.find('.backdrop')[0].onclick = function(){
@@ -166,54 +172,71 @@ var se = {
 		 	}
 		}
 	},
- 	createElem: function(html) {
-    var container = document.createElement('div');
-    container.innerHTML = html;
-    return container.firstChild
-  },
-	find: function (elem){
-  	return document.querySelectorAll(elem);
-	},
- /*
-    Get mouse coords
-    @raturn:{
-      x: int,
-      y: int
-    }
-  */
-  getMouse: function(e){
-    e = e || window.event;
-    if (e.pageX == null && e.clientX != null ) {
-      var html = document.documentElement; var body = document.body
-      e.pageX = e.clientX + (html && html.scrollLeft || body && body.scrollLeft || 0) - (html.clientLeft || 0)
-      e.pageY = e.clientY + (html && html.scrollTop || body && body.scrollTop || 0) - (html.clientTop || 0)
-    }
-    return {
-      x: e.pageX,
-      y: e.pageY
-    }
-  },
-	/*
-	 return need attr
+	/*create DOM element
+		@param: html string
+		@return: appended DOM element
 	*/
+ 	createElem: function(html) {
+	    var container = document.createElement('div');
+	    container.innerHTML = html;
+    	return container.firstChild
+  	},
+  	/*find selectors
+  		@return: object array,
+  		@param: selector: string
+  	*/
+	find: function (elem){
+  		return document.querySelectorAll(elem);
+	},
+	/*Get mouse coords
+	    @raturn:{
+	      x: int,
+	      y: int
+	    }
+	*/
+  	getMouse: function(e){
+	    e = e || window.event;
+	    if (e.pageX == null && e.clientX != null ) {
+	      var html = document.documentElement; var body = document.body
+	      e.pageX = e.clientX + (html && html.scrollLeft || body && body.scrollLeft || 0) - (html.clientLeft || 0)
+	      e.pageY = e.clientY + (html && html.scrollTop || body && body.scrollTop || 0) - (html.clientTop || 0)
+	    }
+	    return {
+	      x: e.pageX,
+	      y: e.pageY
+	    }
+ 	},
+	// return need attr
 	attr: function(el, attribute){
 	  return el.getAttribute(attribute)
 	},
-  /* execComand
+    /*execComand
 		@param:
 			ifr:object{
 				ifr.this - iframe
 				ifr.click - name command
 				ift.bool - true/false
 				ift.val - value
-			}
+		}
 	*/
 	exec: function(ifr){
 		return  ifr.this.document.execCommand(ifr.click, ifr.bool, ifr.val);
 	},
+  	/*get value of execComand
+		@param:
+			ifr:object{
+				ifr.this - iframe
+				ifr.command - name command
+			}
+		@return: value of execComand: string
+	*/
+	getExec: function(ifr){
+		return  ifr.this.document.queryCommandValue(ifr.command);
+	},
 	drag: function(){
 
 	},
+	/*attache event*/
 	event: function(elem, eventName, selectorFunc, handler) {
       elem['on'+eventName] = function(e) {
         var target = e && e.target || e.srcElement;
@@ -224,11 +247,9 @@ var se = {
           target = target.parentNode;
         }
       }
-  },
-/*
-	handler click on button toolbar
-*/
-	handlerToolbar: function(iframe){
+  	},
+	/*handler click on button toolbar*/
+	handlerToolbar: function(opt){
 		var ed = this;
 		// onclick on toolbar btn				
 		ed.event(ed.find('.toolbar')[0], "mousedown", 
@@ -241,7 +262,7 @@ var se = {
 			document.body.onmouseup = false;
 			document.body.onmousemove = false;	
 	 			if(dataType == 'default'){
-	 				ed.exec({this: iframe, click: clicked.id, bool:false, val: null})
+	 				ed.exec({this: opt.win, click: clicked.id, bool:false, val: null})
 	 			}
 	 			// colorpicker
 	 			if(dataType == 'colorpicker'){		
@@ -250,7 +271,7 @@ var se = {
 							what: [clicked], 
 							css: ['backgroundColor'], 
 							func: function(){ //BackColor
-								ed.exec({this: iframe, click: clicked.id, bool: false, val: this.color})			
+								ed.exec({this: opt.win, click: clicked.id, bool: false, val: this.color})			
 							}
 						});			
 	 			}
@@ -264,13 +285,15 @@ var se = {
 						li_len = li.length;
 						for(var j = 0; j < li_len; j++){
 							li[j].onclick = function(){
-								ed.exec({this: iframe, click: clicked.id, bool: false, val: this.style.fontFamily});
+								ed.exec({this: opt.win, click: clicked.id, bool: false, val: this.style.fontFamily});
 								ed.find('.backdrop')[0].onclick();// handler event  closeToggle() method
-								clicked.value = this.style.fontFamily;
+								var fname  = this.style.fontFamily.replace(/['"]*/g, '');
+								clicked.value = fname;
+								clicked.style.fontFamily = fname;
 							}
 						}
 	 				}
-	 				// changind font-size
+	 				// changind font-size;
 	 				if(clicked.id == "FontSize"){
 	 					ed.backdrop("block");
 	 					var marker= clicked.firstChild;
@@ -285,7 +308,7 @@ var se = {
 							marker.style.left = ((new_left < 0) ? 0 : new_left)  + "px";
 							var val = Math.round(marker.offsetLeft/9 + 1); 		
 							marker.firstChild.innerHTML =  val; 		
-							ed.exec({this: iframe, click: clicked.id, bool: false, val: val});
+							ed.exec({this: opt.win, click: clicked.id, bool: false, val: val});
 	 					}
 	 					setMarker(); 					  
 	 					document.body.onmousemove = function(e){
@@ -298,8 +321,67 @@ var se = {
 	 					}
 	 				}
 	 			}
+	 			ed.checkValue({doc: opt.doc, win: opt.win});
 		});		
 	},
+
+	/*set and unset buttons;
+		attache event
+		@param: {
+			opt: object - {doc: iDoc[item], win: iWin[item] }
+		}
+	*/
+	checkValue: function(opt){
+		var ed = this,
+		//checked button and styles text;
+		checkAndSet = function(){
+			var btn_types = ed.buttons;
+			for(var type in btn_types){
+				var btn_count = btn_types[type].length;
+				for(var btn_name = 0; btn_name < btn_count; btn_name++){
+					//value
+					var getEX =  ed.getExec({this: opt.win, command: btn_types[type][btn_name]}), 
+					//need btn
+					btn = ed.find('#toolbar'+ ed.id + ' #' + btn_types[type][btn_name] + '[data-toolbar="btn-toolbar"]')[0];
+					switch (type) {
+						/*@default buttons*/
+						case 'default': 
+							btn.style[ed.pushed.css] = (getEX == "true" ) ? ed.pushed.val : ed.pushed.def;
+						break;
+						/*@font type buttons*/
+						case 'font-type':
+							if(getEX != false && getEX != true){
+								if(btn_types[type][btn_name] == "FontSize"){
+									var point = btn.firstChild;
+									point.style.left =  getEX*8 +"px";
+									point.firstChild.innerHTML = getEX;
+								}
+								if(btn_types[type][btn_name] == "FontName"){
+									var fname = getEX.replace(/['"]*/g, '');
+									btn.value = fname;
+									btn.style.fontFamily = fname;
+								}
+							}
+						break; 
+						/*@colorpicker buttons*/
+						case 'colorpicker': 
+								btn.style.backgroundColor = getEX;
+						break;
+					}
+				}	
+			}
+		}
+		/*set event for set value*/
+		checkAndSet(opt);
+		var events = ["onclick", "onkeydown", "onkeypress", "onfocus"],
+		countEvent = events.length 
+		for(var event = 0; event < countEvent; event++){
+			opt.doc[events[event]] = function(){
+				checkAndSet(opt);
+			}
+		}
+	},
+
 	/*
 	*init text editor;
 	*create iframe, toolbar;
@@ -325,12 +407,8 @@ var se = {
 			ed.find('body')[0].appendChild(ed.createElem(ed.patterns({name: "BACKDROP"}) ))
 			ed.find("#toolbar"+id_r)[0].appendChild(ed.createElem(ed.patterns({name: "CREATE-PANEL-TOOLBAR", tb: ed.createToolbar() }) ));
 			ed.closeToggle(); // attached "onclick" for close toggle class and backdrop
-			ed.handlerToolbar(iWin[item]); // attached "onclick" for btn on toolbar
+			ed.handlerToolbar({doc: iDoc[item], win: iWin[item] }); // attached "onclick" for btn on toolbar
+			ed.checkValue({doc: iDoc[item], win: iWin[item] });
 		}
-
 	}
 }
-
-
-
-

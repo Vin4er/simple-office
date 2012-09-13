@@ -1,10 +1,10 @@
 *{
 	color: rgba(9,89,89,.8);;
-	font-family:tahoma;
+	font-family: tahoma;
 	font-weight: lighter;
-	font-size:13px;
-	margin:0px;
-	padding:0px;
+	font-size: 13px;
+	margin: 0px;
+	padding: 0px;
 	border-collapse: collapse;
 	-webkit-user-select: none;
 	-moz-user-select: none;
@@ -62,10 +62,14 @@ body{background:rgba(0,0,0,.6);}
 .toolbar #outdent{ background: url(../icons/icons.png) no-repeat; background-position: -608px;}
 .toolbar #indent{ background: url(../icons/icons.png) no-repeat; background-position: -640px;}
 
-.toolbar .fontname{	display: inline-block; float: left;position:relative;}
-.toolbar .fontname #FontName{
-	width: 150px;
+.toolbar .fontname{	
+	display: inline-block; 
+	float: left;
+	position: relative;
+}
 
+.toolbar .fontname #FontName{
+	width: 120px;
 }
 .backdrop {
 	position: fixed;
@@ -78,7 +82,7 @@ body{background:rgba(0,0,0,.6);}
 }
 .toolbar .fontname .toggle{
 	position: absolute;
-	top: 100%;
+	top: 34px;
 	left: 0;
 	z-index: 1000;
 	display: none;
@@ -102,32 +106,39 @@ body{background:rgba(0,0,0,.6);}
 .toolbar .fontsize{
 	float: left;
 	display: inline-block;	
+	cursor: e-resize;
 }
 .toolbar .fontsize .fontsize-body{
-	/*background: white;*/
 	position: relative;
 	display: block;	
-	height: 31px;
+	height: 29px;
 	width: 70px;
+	cursor: e-resize;
 }
-.toolbar .fontsize  .value{
 
-}
 .toolbar .fontsize a.fontsize-marker{
 	position: absolute;
 	top: 0px;
+	background: url(../icons/marker-fontsize.png) -1px 19px;
 	left: 0px;
 	display: block;
-	width: 16px;
+	width: 17px;
 	height: 100%;
-	border: 1px solid black;
-	cursor: pointer;
+	cursor: e-resize;
+}
+.toolbar .fontsize .pt{
+	position: relative;
+	font-size: 12px;
 }
 .toolbar .fontsize a.fontsize-marker div.value{
 	font-weight: bold;
+	position: relative;
+	top: -1px;
+	left: -1px;
 }
 .toolbar .fontsize a.fontsize-marker div{
 	text-align: center;
+	cursor: e-resize;
 }
 
 .toolbar #isrt_table{background: url(../icons/icons.png) no-repeat; background-position: -160px;}
@@ -170,79 +181,63 @@ body{background:rgba(0,0,0,.6);}
 	height:3px;
 }
 
-/*Кололрпикер*/
-#wrap_change{height:24px;width:189px;margin:0px auto;font-size:14px;	font-weight: bold;}
-#wrap_change #color_out{
-	outline:none;
-	width:60px;
-	height:24px;
-	background: rgba(255,255,255,.7);
-	-webkit-box-shadow: inset 0 0px 8px rgba(0,0,0,.1);
-	-moz-box-shadow:	inset 0 0px 8px rgba(0,0,0,.1);
-	box-shadow: 		inset 0 0px 8px rgba(0,0,0,.1);
-    border: 1px solid  rgba(0,0,0,.2);
-    color: rgba(9,89,89,.8);;
-	font-weight: bold;
-}
-#wrap_change  #ch_color{
-	margin: 0px 13px 0px 0px;
-	padding:3px;
-	width:100px;
-	height:26px;
-	font-weight: bold;
-	border:1px solid #ccc;
-	background:#eee;
-	background-image: -webkit-linear-gradient(top,#fff,#e2e2e2);
-	background-image: -moz-linear-gradient(top,#fff,#e2e2e2);
-	background-image: -ms-linear-gradient(top,#fff,#e2e2e2);
-	background-image: -o-linear-gradient(top,#fff,#e2e2e2);
-	background-image: linear-gradient(top,#fff,#e2e2e2);
-    cursor:pointer;
-}
-#wrap_change  #ch_color:active{
-	-webkit-box-shadow:	inset 0px 1px 8px rgba(0,0,128,.2);
-	-moz-box-shadow:	inset  0px 1px 8px rgba(0,0,128,.2);
-	box-shadow:			inset 0px 1px 8px rgba(0,0,128,.2);
-}
-#fontfamily,#c-p_wrap,#cr_table_table{
-	position:absolute;top:0px;left:0px;
-	cursor: pointer; border:1px solid #ccc;border-top:none;	background:#e2e2e2;
-	background-image: -webkit-linear-gradient(top,#e2e2e2,#d0d0d0);
-	background-image: -moz-linear-gradient(top,#e2e2e2,#d0d0d0);
-	background-image: -ms-linear-gradient(top,#e2e2e2,#d0d0d0);
-	background-image: -o-linear-gradient(top,#e2e2e2,#d0d0d0);
-	background-image: linear-gradient(top,#e2e2e2,#d0d0d0);
-	-webkit-box-shadow: 0px 2px 4px rgba(0,0,0,.3);
-	-moz-box-shadow:	0px 2x 4px rgba(0,0,0,.3);
-	box-shadow:			0px 2px 4px rgba(0,0,0,.3);
-}
-.c-p-wrap{height:231px;width:201px; position:absolute; border:1px solid black; background:gray;z-index:2500;}
-.c-p-backdrop{position:absolute; left:0px; top:0px; width:100%; height:100%; z-index:100;}
-.c-p_wheel{	position:relative; height:195px; width:195px; margin:3px; background: url(../icons/icons-colorpicker/wheel.png) no-repeat;cursor:default;  }
-.c-p_mask{position:absolute;top:49px;left:49px;width:101px;height:101px;background:url(../icons/icons-colorpicker/mask.png) no-repeat; background-color: rgb(255,255,255);cursor:default;}
-.mark_wheel, .mark_mask{cursor:default;  position:relative; z-index:10; width:17px; height:17px;background:url(../icons/icons-colorpicker/marker.png) no-repeat;}
-/*.mark_wheel{top:50px; left:15px;}*/
 
 
-/*Создание таблиц.*/
-#cr_table_table{position:absolute;	background:#ccc; border:1px solid rgba(0,0,128,.3); border-top:none;}
-#cr_table_table td{height:14px; width:25px;   border:1px solid maroon;border-top:none}
-#cr_table_table td:hover{background:rgba(33,33,128,.2); border:1px solid rgba(0,0,128,.8);border-top:none}
 
-#cursor_line_helper{position:absolute; top:0px; left:0px;width:100%; height:100%; z-index:10;}
-#h_cursor_line{position:absolute;z-index:11;width:100%;  height:6px; border-bottom:2px solid #9534E4;  cursor:n-resize}
-#v_cursor_line{position:absolute;z-index:11; height:100%; width:6px; border-right:2px solid #9534E4;   cursor:w-resize}
-
-.flyover{
-	position:absolute;
-	top:0px;
-	left:0px;
-	z-index:10;
-	padding:6px;
-	background:rgba(255,255,255,.95);
-	border:1px solid rgba(129,167,210,.4);
-	cursor:pointer;
-	margin:auto;
+.c-p-wrap{
+	height: 195px;
+	width: 195px; 
+	border: 1px solid #bfc4ce;
+	position: absolute; 
+	background: #ebecef;
+	z-index: 2500;
+		-webkit-box-shadow:  0px 3px 10px rgba(0,0,0,.6);
+	-moz-box-shadow:	 0px 3px 10px rgba(0,0,0,.6);
+	box-shadow:			 0px 3px 10px rgba(0,0,0,.6);
 }
-.flyover a,.floatImg{font-weight: bold;  text-decoration:none;}
-.flyover a:hover,.floatImg:hover{text-decoration:underline;}
+.c-p-backdrop{
+	position: absolute; 
+	left: 0px; 
+	top: 0px; 
+	width: 100%; 
+	height: 100%; 
+	z-index: 100;
+}
+.c-p_wheel{	
+	position: relative; 
+	height: 195px; 
+	width: 195px; 
+	cursor: default;  
+}
+.c-p_wheel-color{
+	height: 195px; 
+	width: 195px; 
+	position: absolute;
+	z-index: 999999;
+	background: url(../icons/icons-colorpicker/wheel.png) no-repeat;
+}
+.c-p_mask{
+	position: absolute;
+	top: 47px;
+	left: 47px;
+	background: url(../icons/icons-colorpicker/mask.png) no-repeat;
+	width: 101px;
+	height: 101px;
+	cursor: default;
+	z-index: 999999;
+}
+.c-p_mask-color{
+	position: absolute;
+	width: 101px;
+	height: 101px;
+	top: 47px;
+	left: 46px;
+}
+.mark_wheel, .mark_mask{
+	position: relative; 
+	z-index: 999999;
+	width: 17px; 
+	height: 17px;
+	background: url(../icons/icons-colorpicker/marker.png) no-repeat;
+	cursor: default;  
+}
