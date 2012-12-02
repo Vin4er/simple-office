@@ -266,8 +266,8 @@ var se = {
   		fTable = win.document.querySelectorAll("table"),
   		fTable_size = fTable.length,
   		removeLine = function(){
-  			var lines = document.querySelectorAll(".help-table-line") 
-  			for(var i = 0; i< lines.length; i++){
+  			var lines = document.querySelectorAll(".back") 
+  			for(var i = 0; i < lines.length; i++){
  					document.body.removeChild(lines[i]);
   			}
   		},
@@ -275,8 +275,7 @@ var se = {
   			removeLine();
   			opt.w = (opt.b == "bottom")?"50%" : "1px";
   			opt.h = (opt.b == "right")?"50%" : "1px";
-
-  			return '<div class="help-table-line" type="' + opt.b + '"  style="left:' + opt.l + ' ; top:'+ opt.t +' ;width: ' + opt.w + '; height: ' + opt.h + '; border-' + opt.b + ':2px solid black;"></div>'
+  			return '<div class="back help-lines-table"><div class="help-table-line" type="' + opt.b + '"  style="left:' + opt.l + ' ; top:'+ opt.t +' ;width: ' + opt.w + '; height: ' + opt.h + '; border-' + opt.b + ':2px solid black;"></div></div>'
   		}
 
   		for(var i = 0; i < fTable_size; i++){
@@ -287,57 +286,75 @@ var se = {
   					return (tag == "td")
   				},
   				function(e){
-  					var moved = this,
-  					cursor = ["default", "e-resize", "s-resize"]
-  					setBodyCursor = function(type){
-							win.document.body.style.cursor = type;
-  					},
-  					moveCoord = {
-  						r: moved.offsetLeft + moved.offsetWidth  , // bottom
-  						b: moved.offsetTop + moved.offsetHeight,   // right
-  					}
-  					var caseCursor = 0;		
-  					if( moveCoord.r + 20 >= ed.getMouse(e).x && ed.getMouse(e).x > moveCoord.r ){
-							caseCursor = 1;
-						}else{
-							caseCursor = 0
-							if( moveCoord.b >= ed.getMouse(e).y  && ed.getMouse(e).y > moveCoord.b-30 ){
-								caseCursor = 2
-							}else{
-								caseCursor = 0;
-							}	  					
-						}
-						setBodyCursor(cursor[caseCursor]);
-						
-  					win.document.onmousedown = function(e){
 
-							var line = ed.createElem(createLine({b: ((caseCursor==1)?"right":"bottom"), l: ed.getMouse(e).x+ "px" , t: ed.getMouse(e).y+ "px" }));						
-							document.body.appendChild(line);
-							line = document.querySelectorAll(".help-table-line")[0];
+  					console.log('mouseover')
+  				// 	var moved = this,
+  				// 	cursor = ["default", "e-resize", "s-resize"]
+  				// 	setBodyCursor = function(type){
+						// 	win.document.body.style.cursor = type;
+  				// 	},
+  				// 	moveCoord = {
+  				// 		r: moved.offsetLeft + moved.offsetWidth  , // bottom
+  				// 		b: moved.offsetTop + moved.offsetHeight,   // right
+  				// 	}
+  				// 	var caseCursor = 0;		
+  				// 	if( moveCoord.r + 20 >= ed.getMouse(e).x && ed.getMouse(e).x > moveCoord.r ){
+						// 	caseCursor = 1;
+						// }else{
+						// 	caseCursor = 0
+						// 	if( moveCoord.b >= ed.getMouse(e).y  && ed.getMouse(e).y > moveCoord.b-30 ){
+						// 		caseCursor = 2
+						// 	}else{
+						// 		caseCursor = 0;
+						// 	}	  					
+						// }
+						// setBodyCursor(cursor[caseCursor]);
+						// if(caseCursor>0){
+						// 							var line = ed.createElem(createLine({b: ((caseCursor==1)?"right":"bottom"), l: ed.getMouse(e).x+ "px" , t: ed.getMouse(e).y+ "px" }));						
+						// 							document.body.appendChild(line);
+						// 							line = document.querySelectorAll(".help-table-line")[0];
+						// }else{
+						// 	line = document.querySelectorAll(".help-table-line")[0];
+						// }
+						// ed.find(".back")[0].onmouseup = function(){
+						// 	alert("asd")
+						// }
+						// 	// 
+  				// 	win.document.onmousedown = function(e){
+  				// 		console.log('mousedown')
+						// 	// var line = ed.createElem(createLine({b: ((caseCursor==1)?"right":"bottom"), l: ed.getMouse(e).x+ "px" , t: ed.getMouse(e).y+ "px" }));						
+						// 	// document.body.appendChild(line);
+						// 	// line = document.querySelectorAll(".help-table-line")[0];
 							
-							var setCoordonLine = function(c){
-							if(line.getAttribute('type') == "bottom"){
-									line.style.top = parseInt(c.y+ ed.find("#toolbar"+ed.id)[0].offsetTop ) +  "px";
-								}
-								if(line.getAttribute('type') == "right"){
-									line.style.left = parseInt(c.x + ed.find("#toolbar"+ed.id)[0].offsetLeft) +"px";
-								}
-							}
-							ed.backdrop('block')
-							setCoordonLine(ed.getMouse(e));
-  						 win.document.onmousemove = function(e){
-  						 			setCoordonLine(ed.getMouse(e));
-  						 }
-  						 	win.document.onmouseup = function(){
-  						 		ed.backdrop('none')
-  						 		setCoordonLine(ed.getMouse(e));
-  								setBodyCursor(cursor[0]);
-  								document.onmousemove = false;
-  					 			win.document.onmousedown = false;
-  								removeLine();
-  					 	}
+							
+						// 	var setCoordonLine = function(c){
+						// 	if(line.getAttribute('type') == "bottom"){
+						// 			line.style.top = parseInt(c.y+ ed.find("#toolbar"+ed.id)[0].offsetTop ) +  "px";
+						// 		}
+						// 		if(line.getAttribute('type') == "right"){
+						// 			line.style.left = parseInt(c.x + ed.find("#toolbar"+ed.id)[0].offsetLeft) +"px";
+						// 		}
+						// 	}
+						// 	ed.backdrop('block')
+						// 	setCoordonLine(ed.getMouse(e));
+  				// 		win.document.onmousemove = function(e){
+  				// 				console.log('move...')
+  				// 		 			setCoordonLine(ed.getMouse(e));
+  				// 		 }
+  				// 		win.document.onmouseup = function(){
 
-	  				}
+  				// 		console.log('mouseup')
+  				// 		 		// ed.backdrop('none')
+  				// 		 		setCoordonLine(ed.getMouse(e));
+  				// 		 		caseCursor = 0
+  				// 				setBodyCursor(cursor[caseCursor]);
+  				// 				 win.document.onmousemove = false;
+  				// 	 			win.document.onmousedown = false;
+  				// 				removeLine();
+
+  				// 	 	}
+
+	  			// 	}
   				}
   			)
   		}
