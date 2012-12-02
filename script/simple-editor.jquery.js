@@ -28,7 +28,7 @@
 					return "<html><head><link rel='stylesheet' href='" + opt.s_outer + "' /><style>" + opt.s_inner + "</style></head><body contenteditable='true'><div></div></body></html>";
 					break;
 				case "BACKDROP":
-					return "<div class='backdrop'></div>"
+					return "<div class='backdrop simple-editor'></div>"
 					break;
 				case "TOOLBAR":
 					return "<div class='toolbar' ></div><iframe class='iframe4e'></iframe>";
@@ -119,28 +119,40 @@
 			}
 	   		return html;
 	  	},
-
+	  	// Создание бэкдропа
+	  	_backdropCreate: function(){
+	  		var set = this;
+	  		$(".backdrop.simple-editor").remove();
+	  		$("body").append(set.patterns({name: "BACKDROP"}));
+	  	},
+	  	// скрыть/показать бэкдроп
+	  	backdrop: function(hide){
+	  		return (hide)?$(".backdrop.simple-editor").hide(0):$(".backdrop.simple-editor").show(0);
+	  	},
+	  	// execCommand
 	  	exec: function(frame, command, bool, val){
 	  		frame.iDoc.body.focus();
 			return  frame.iWin.document.execCommand(command, bool, val);
 		},
+		// Получение редактора, получиышег фокус(произошло событие на тулбаре)
 		getAboutFrame: function(iframe){
 			return {
 				iWin: iframe.contentWindow,
 				iDoc: iframe.contentDocument
 			}
 		},
-	  /*handler click on button toolbar*/
+	    // Установка обработчиков событий для тулбара
 		handlerToolbar: function(opt){
 			var set = this,
 			editor = set.editor;
 			editor.find('.toolbar').on('mousedown', "[data-toolbar]", function(){
 				var clicked = $(this),
-				focusFrame = set.getAboutFrame(clicked.parents("[is-editor]").find('iframe').get(0))
+				clickedID = clicked.attr('id'),
+				focusFrame = set.getAboutFrame(clicked.parents("[is-editor]").find('iframe').get(0));
+
 				switch(clicked.attr('data-type')){
 					case  "default":
-						console.log(set)
-						set.exec(focusFrame, clicked.attr('id'), false, null)
+						set.exec(focusFrame, clickedID, false, null)
 					break;
 					case "font-type":
 						switch(clicked.attr('id')){
@@ -148,18 +160,41 @@
 								clicked.next().on('mousedown', 'li', function(){
 									var fontName = $(this).text().replace(/['"]*/g, '')
 									clicked.html(fontName).css('font-family', fontName)
-									set.exec(focusFrame, clicked.attr('id'), false, fontName)
+									set.exec(focusFrame, clickedID, false, fontName)
 								})
 							break;
 							case "FontSize":
 								/*   */
+								var doc = $(document),
+								_setMarker = function(){
+									var marker = clicked.find(".fontsize-marker"),
+									click_left = event.pageX - marker.width()/2,
+									shift = clicked.width() - marker.width(),
+									min_left = clicked.offset().left;
+									if(click_left > min_left  && click_left <= (min_left + shift)){					
+										marker.offset({left: click_left});
+										/* /9??? */
+										var val = Math.round(marker.position().left/9)+1;
+										marker.find(".value").text(val);
+										set.exec(focusFrame, clickedID, false, val)
+									}
+								}
+								set.backdrop();
+								_setMarker();
+								doc.mousemove(function(){
+									_setMarker();
+								});
+								doc.mouseup(function(){
+									doc.unbind();
+									_setMarker();
+									set.backdrop('hide');
+									return false
+								})
 							break;
 						}
 					break;
 					case "colorpicker":
-						colorpicker.init({
-							
-						});		
+						clicked.seColorpicker()		
 					break;
 				}
 
@@ -169,6 +204,7 @@
 
 	  	init: function(init_obj){
 	  		var set = this, 
+	  		body = $('body'),
 	  		editor, iframe, iDoc, iWin, _iframe;
 	  		set.id = new Date().getTime();
 	  		editor = set.editor = $(init_obj).attr('data-id', set.id);
@@ -182,6 +218,7 @@
 			iDoc.close();
 
 			editor.find('.toolbar').append(set.patterns({name: "CREATE-PANEL-TOOLBAR", tb: set.createToolbar() }) )
+			set._backdropCreate();
 			set.iDoc = iDoc;
 			set.iWin = iWin
 			set.handlerToolbar()
@@ -191,9 +228,6 @@
 	if (options){ 
         $.extend(settings, options); // при этом важен порядок совмещения
     }
-
-
-
 
 
  	return this.each(function() {
