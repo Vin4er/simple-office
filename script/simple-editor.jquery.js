@@ -47,8 +47,8 @@
 					return "<span data-toolbar='btn-toolbar' data-type = '" + opt.t + "' id='"+opt.b+"'  class='colorpicker-open-btn e_b'><div></div></span>";
 					break;			
 				case "FONTNAME-BUTTON-ON-TOOLBAR":
-					var html = "<input data-toolbar='btn-toolbar'  type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'/>"  + set.createListsMenu("ul", 'toggle', 'font-menu', set.fontsName);
-					return "<span class='fontname'>" + html + "</span>";
+					var html = "<ul >"  + set.createListsMenu(set.fontsName) + "</ul>";
+					return "<span class='fontname'><a  data-toolbar='btn-toolbar' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"' href='javascript:void(0);' tabindex='1'>dsd</a>" + html + "</span>";
 					break;			
 				case "TABLE-ADD-BUTTON-ON-TOOLBAR":
 					var html = "<input data-toolbar='btn-toolbar'  type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'/>"  + set.createTable({n: 8, m: 8}, "class='toggle add-table-se'", "", "");
@@ -56,13 +56,13 @@
 					break;
 			}
 		},
-		createListsMenu: function(_tag, _class, _id, _array){
+		createListsMenu: function(_array){
 			var list = "",
 			array_len = _array.length;
 			for(var i = 0; i<array_len; i++){
 				list += "<li style='font-family: " + _array[i] + "'>"+ _array[i] +"</li>";
 			}
-			return "<" + _tag + " id='" + _id + "' class='" + _class + "' >" + list + "</"+_tag+">"
+			return  list 
 		},
 		/*create table
 		 @param: {
@@ -130,7 +130,7 @@
 				iDoc: iframe.contentDocument
 			}
 		},
-	  		/*handler click on button toolbar*/
+	  /*handler click on button toolbar*/
 		handlerToolbar: function(opt){
 			var set = this,
 			editor = set.editor;
@@ -143,7 +143,18 @@
 						set.exec(focusFrame, clicked.attr('id'), false, null)
 					break;
 					case "font-type":
-					
+						switch(clicked.attr('id')){
+							case "FontName":
+								clicked.next().on('mousedown', 'li', function(){
+									var fontName = $(this).text().replace(/['"]*/g, '')
+									clicked.html(fontName).css('font-family', fontName)
+									set.exec(focusFrame, clicked.attr('id'), false, fontName)
+								})
+							break;
+							case "FontSize":
+								/*   */
+							break;
+						}
 					break;
 					case "colorpicker":
 						colorpicker.init({

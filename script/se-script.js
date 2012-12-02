@@ -118,7 +118,7 @@ var se = {
 				break;
 			case "FONTSIZE-BUTTON-ON-TOOLBAR":
 				var html = "<span data-toolbar='btn-toolbar' data-type = '" + opt.t + "'   id='"+opt.b+"'  class='fontsize-body e_b'><a class='fontsize-marker'><div class='value'>1</div><div class='pt'>пт</div></a></span>"
-				return "<span class='fontsize'>" + html + "</span>";
+				return "<a class='fontsize'>" + html + "</a>";
 				break;
 			case "COLORPICKER-BUTTON-ON-TOOLBAR":
 				return "<span data-toolbar='btn-toolbar' data-type = '" + opt.t + "' id='"+opt.b+"'  class='colorpicker-open-btn e_b'><div></div></span>";
