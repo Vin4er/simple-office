@@ -194,7 +194,9 @@
 						}
 					break;
 					case "colorpicker":
-						clicked.seColorpicker()		
+						clicked.seColorpicker({
+							selector: clicked.find('div'),
+						})		
 					break;
 				}
 

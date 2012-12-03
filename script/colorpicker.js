@@ -241,7 +241,6 @@ var colorpicker = {
     );
   },
   /*
-
   convertate and calculate color
     hex2rgb, rgb2hsv, hsv2rgb, rgb2hex, css2rgb, calcHSV
   */
@@ -259,15 +258,11 @@ var colorpicker = {
         if(HEX[i] == '0'){
           str = str + HEX[i]
         }else{
-          break
+          break;
         }
       }
       if(str.length == 6){
-        return {
-          R: 0, 
-          G: 0, 
-          B: 0
-        }
+        return { R: 0,  G: 0,  B: 0 }
       }
       if(HEX.length != 6){
         return false
@@ -306,20 +301,12 @@ var colorpicker = {
       if(h < 0){
         h += 360
       }
-      if(max == 0){
-        s = max;
-      }else{
-        s = 255*delta/max
-      }
+      s = (max == 0) ? max : (255*delta/max)
       v = max;
       if((RGB.R==RGB.G)&&(RGB.R==RGB.B)){
         h=0
       };
-      HSV = {
-        H: parseInt(h),
-        S: parseInt(s),
-        V: parseInt(v)
-      };
+      HSV = { H: parseInt(h), S: parseInt(s),    V: parseInt(v)};
     return  HSV;
     },
     HSV2RGB: function (HSV) {
@@ -365,24 +352,15 @@ var colorpicker = {
                   b = 0;
                 }
       };
-      if(r<0){
-        r=0
-      } 
-      if(g<0){
-        g = 0;
-      }
-      if(b < 0){
-        b = 0 
-      } 
-      return {
-        R: parseInt(r),
-        G: parseInt(g),
-        B: parseInt(b)
-      };
+      r = (r<0)?0:r;
+      g = (g<0)?0:g;
+      b = (b<0)?0:b;
+      return {  R: parseInt(r), G: parseInt(g),  B: parseInt(b) };
     },
     RGB2Hex: function (RGB) {
-      var HEX = [RGB.R.toString(16), RGB.G.toString(16), RGB.B.toString(16)];
-      for(var f=0; f<HEX.length; f++){ 
+      var HEX = [RGB.R.toString(16), RGB.G.toString(16), RGB.B.toString(16)],
+      len = HEX.length
+      for(var f=0; f<len; f++){ 
         if (HEX[f].length == 1){
           HEX[f] = '0' + HEX[f];
         }
@@ -391,11 +369,7 @@ var colorpicker = {
     },
     CSScl2RGB: function (s){
       if( (s=='transparent')||(s=='rgba(0, 0, 0, 0)')||(s=='rgb(0, 0, 0)') ){
-        return {
-          R:0, 
-          G:0, 
-          B:0
-        }
+        return { R:0, G:0, B:0}
       }
       if(s.indexOf('#') != "-1"){
         s = s.substring(1); 
@@ -404,9 +378,7 @@ var colorpicker = {
         s = s.substring(4,s.length-1);
         s = s.split(','); 
         return {
-          R: parseInt(s[0]),
-          G: parseInt(s[1]),
-          B: parseInt(s[2])
+          R: parseInt(s[0]),  G: parseInt(s[1]),  B: parseInt(s[2])
         }
       }
     },
@@ -425,14 +397,10 @@ var colorpicker = {
         h = 360 - parseInt(coords.y);
         h = (coords.x > 90) ? (360 - h ) :  h;
       } 
-      h = (h >= 357) ? 0 : ((h<1) ? 0 : h);
+      // h = (h >= 357) ? 0 : ((h<1) ? 0 : h);
       // console.log("H:" + h + " V: " + v + " S:"  +s)
       // console.log(cp.color)
-      return {
-        H: h, 
-        V: v, 
-        S: s
-      }
+      return { H: h,  V: v,  S: s}
     }
   },
   
