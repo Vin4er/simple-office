@@ -4,11 +4,11 @@ $.fn.seColorpicker = function(options) {
     var settings = {
         selector: $("body"), // jQuery тег, у которого изменяем свойства
         style_color: "background-color", //свойство, которое надо изменять
-        outer: undefined, // элемент к которому привязан колоприкер
         color: "#ffffff", // дефолтный цвет, если не задан
-        radius: undefined,
-        getMarkers: {},
-        getMask: {},
+        outer: undefined, // элемент к которому привязан колоприкер
+        radius: undefined, // радиус ^^
+        delta: 8, // дельта для окружности (уменьшаем радиус)
+        change: function(){}, // юзверьская функция, вызываемая при смене цвета
         class: { // классы элементов колорпикера
             wrap: 'c-p-wrap', 
             marker_wheel: "mark_wheel",
@@ -24,7 +24,7 @@ $.fn.seColorpicker = function(options) {
             var cp = this;
             switch(opt){
                 case "cp": 
-                    return "<div class='" + cp.class.wrap + " simple-color'><div  class='" + cp.class.mask_wheelColor + "' data-marker='circle'></div><div class='" + cp.class.mask_mask + "' data-marker='square'></div><div  class='" + cp.class.mask_wheel + "'><div class='" + cp.class.marker_wheel + "' data-type-math='circle'></div></div><div class='" + cp.class.mask_maskColor + "'><div class='" + cp.class.marker_mask + "'  data-type-math='square'></div></div>"
+                    return "<div class='" + cp.class.wrap + " simple-color'><div  class='" + cp.class.mask_wheelColor + "' data-marker='circle'></div><div class='" + cp.class.mask_mask + "' data-marker='square'><div class='" + cp.class.marker_mask + "'  data-type-math='square'></div></div><div  class='" + cp.class.mask_wheel + "'><div class='" + cp.class.marker_wheel + "' data-type-math='circle'></div></div><div class='" + cp.class.mask_maskColor + "'></div>"
                 break;
                 case "backdrop":
                     return "<div class='" + cp.class.backdrop+ " simple-color'></div>"
@@ -35,7 +35,7 @@ $.fn.seColorpicker = function(options) {
         _backdropCreate: function(){
             var cp = this;
             cp.removeColorpicker();
-            var backdrop = $(cp.pattern("backdrop")).on('mouseup', function(){
+            var backdrop = $(cp.pattern("backdrop")).on('click', function(){
                 cp.removeColorpicker();
             })
             $("body").append(backdrop);
@@ -47,83 +47,129 @@ $.fn.seColorpicker = function(options) {
         // Создание колорпикера
         append: function(obj){
             var cp = this;
-            cp._backdropCreate();
-            var offset = cp.outer.offset()   
-            var item = $(cp.pattern('cp')).offset({left: offset.left, top: offset.top+cp.outer.height()+8})
-            $('body').append(item);         
+            cp._backdropCreate(); 
+            var offset = cp.outer.offset(), 
+            item = $(cp.pattern('cp')).offset({
+                left: offset.left, 
+                top: offset.top+cp.outer.height()+14 // 14 - смещение вниз
+            });
+            $('body').append(item);        
         },
-        // установка координат маркеров, просчет модели SHV
+        // установка координат маркеров. логика передыижения
         setPosition: function(marker){
             var cp = this,
-            mark = marker.marker,
-            markerWidth = mark.width(),
-            mouse = {
-                x: event.pageX - markerWidth/2,
-                y: event.pageY - markerWidth/2
-            },
-            coord = {};
+                mark = marker.marker,
+                markerWidth = mark.width(),
+                //Координаты
+                mouse = {
+                    x: event.pageX,
+                    y: event.pageY
+                };
+
             switch (marker.type){
+                
                 //пересчет при передвижение маски
                 case 'square':
                     var _mask = $(".c-p_mask"),
-                    _maskWidth = _mask.width(),
-                    _mask_offset = _mask.offset();
-                    coord = {
-                        x: (mouse.x >= _mask_offset.left-9 && (mouse.x + markerWidth) <= (_maskWidth + _mask.offset().left+9)) ?( mouse.x)  : mark.offset().left,
-                        y: (mouse.y >= _mask_offset.top-9 && (mouse.y + markerWidth) <= ( _maskWidth + _mask.offset().top+9)) ? (mouse.y) : mark.offset().top,
-                    }
-                    marker.marker.offset({left: coord.x, top: coord.y})
+                        _maskWidth = _mask.width(),
+                        _mask_offset = _mask.offset(),
+                        // дабы не делать большие условия
+                        coordBool = { 
+                            left: (mouse.x > (_mask_offset.left)),
+                            right: (mouse.x ) < (_maskWidth + _mask.offset().left),
+                            top: (mouse.y > (_mask_offset.top)),
+                            bottom: (mouse.y ) < (_maskWidth + _mask.offset().top)
+                        }
+                
+                    //расчет координат x, с учетом промежутка [left; right]
+                    var x = (coordBool.left && coordBool.right) 
+                                ? mouse.x   
+                                : !coordBool.left
+                                    ? _mask_offset.left
+                                    : _mask_offset.left+_mask.width();
+                
+                    //расчет координаты y, с учетом промежутка [top; bottom]
+                    var y = (coordBool.top && coordBool.bottom) 
+                                ? mouse.y   
+                                : !coordBool.top
+                                    ? _mask_offset.top
+                                    : _mask_offset.top+_mask.width();
+                
+                    //Установка позиции и установка цвета
+                    mark.offset({left: x, top: y})
                     cp.color =  "#"+cp.conv.RGB2Hex(cp.conv.HSV2RGB(cp.calcHSV()))
-                    console.log(cp.calcHSV())
+                
                 break;
+                
                 //пересчет при передвижение по кругу
                 case 'circle':
+
                     var layer = $("." + cp.class.mask_wheelColor),
-                    _layer_offset = layer.offset(), 
-                    radius = Math.round(layer.width()/2) - 8,  // радиус окружности
-                    // считаем координаты кругового движения
-                    baseX =  event.pageX - (radius + _layer_offset.left),
-                    baseY = -event.pageY + (radius - _layer_offset.top ),
-                    x =  Math.sqrt((radius*radius*baseX*baseX)/(baseX*baseX+baseY*baseY) ),
-                    y = -(x*baseY/baseX);
+                        _layer_offset = layer.offset(), 
+                        radius = Math.round(layer.width()/2) - cp.delta,  // радиус окружности
+                       
+                        // считаем координаты кругового движения
+                        baseX =  mouse.x - _layer_offset.left - radius,
+                        baseY = -mouse.y + _layer_offset.top + radius,
+                    
+                        //Уровнение окружности
+                        x =  Math.sqrt((radius*radius*baseX*baseX)/(baseX*baseX+baseY*baseY) ),
+                        y = -(x*baseY/baseX);
+
                     cp.radius = radius;
-                    x = (baseX > 0) ? (-x) : x;
-                    y = (baseX > 0) ? (-y) : y;                
-                    coord = {
-                        x: (Math.abs(x - radius)),
-                        y: (Math.abs(y - radius))
-                    }
-                    coord.y  = isNaN(coord.y) ? 
-                            ((baseY < 0 && coord.x == 90) 
-                                ? 180  : ((baseY > 0 && coord.x == 90)
-                                    ? 0  :  coord.y)) 
-                            : coord.y;
-                    //конец
-                    marker.marker.css({left: coord.x + "px", top: coord.y + "px"});
-                    $("."+ cp.class.mask_maskColor ).css(cp.style_color, "#"+cp.conv.RGB2Hex(cp.conv.HSV2RGB({S: 255, V: 255, H: cp.calcHSV(coord).H})));
-                    cp.color =  "#"+cp.conv.RGB2Hex(cp.conv.HSV2RGB(cp.calcHSV()))
+
+                    // просчет координат, с учетом декарт сист. координат, с началом в центре окружности  
+                    x = (Math.abs( ((baseX > 0) ? (-x) : x) - radius)),
+                    y = (Math.abs( ((baseX > 0) ? (-y) : y) - radius))
+
+                    //Установка позиции "y" если эта координата равна NaN - уточняем промежуток[0, 180]
+                    y  = isNaN(y) && x==90
+                            ? (baseY<0) 
+                                ? 180 
+                                : (baseY>0)
+                                    ? 0 
+                                    : y 
+                            : y;
+
+                    // установка позиции и цвета
+                    marker.marker.css({
+                        left: x + "px", 
+                        top: y + "px"
+                    });
+                    $("."+ cp.class.mask_maskColor ).css(cp.style_color, "#"+cp.conv.RGB2Hex(cp.conv.HSV2RGB({S: 255, V: 255, H: cp.calcHSV({  x: x, y:y }).H})));
+                    cp.color = "#"+cp.conv.RGB2Hex(cp.conv.HSV2RGB(cp.calcHSV()))
+                
                 break;
             }
+            // Юзерская функция, расчитанная на выполнение при изменении цвета
+            cp.change();
             cp.selector.css("background-color", cp.color )
         },
+        // установка событий для перетаскивания
         drug: function(){
             var cp = this;
             $(".c-p-wrap.simple-color").on('mousedown', ".c-p_mask, .c-p_wheel-color", function(){
                 var layer = $(this),
-                marker = {
-                    marker: $("[data-type-math='" + layer.attr('data-marker') + "']"),
-                    type: layer.attr('data-marker'),
-                },
-                doc = $(document);
-                cp.setPosition(marker)
+                    doc = $(document),
+                    marker = {
+                        marker: $("[data-type-math='" + layer.attr('data-marker') + "']"),
+                        type: layer.attr('data-marker'),
+                    }
+                    
+                // установка меркера
+                cp.setPosition(marker);
+                
                 doc.mousemove(function(){
+                // установка меркера по mousedown
                     cp.setPosition(marker);
                 })
                 doc.mouseup(function(){
+                // установка меркера по mouseop
                     doc.unbind();
                     cp.setPosition(marker)
                 })
-            })
+            });
+            // силуляция нажатия на маску, когда нажали на маркер
             $("." + cp.class.marker_mask).on("mousedown", function(){
                 $(" .c-p_mask").mousedown();
             })
@@ -135,7 +181,7 @@ $.fn.seColorpicker = function(options) {
         _setColor: function(){
             var cp = this,
             color = cp.color,
-            radius =  Math.round($("." + cp.class.mask_wheelColor).width()/2) - 8,
+            radius =  Math.round($("." + cp.class.mask_wheelColor).width()/2) - cp.delta,
             coord = {
                 x: radius*Math.cos((cp.conv.RGB2HSV(cp.conv.CSScl2RGB(color)).H+255)/180*Math.PI)+radius,
                 y: radius*Math.sin((cp.conv.RGB2HSV(cp.conv.CSScl2RGB(color)).H+255)/180*Math.PI)+radius
@@ -150,46 +196,40 @@ $.fn.seColorpicker = function(options) {
                 "top": parseInt((255-cp.conv.RGB2HSV(cp.conv.CSScl2RGB(color)).V)/255*radius)+'px'
             });
         },
+        // вычсление параметров цветовой модели HSV
         calcHSV: function(coords){
             var cp = this,
-            delta = 8,
-            radius =  Math.round($("." + cp.class.mask_wheelColor).width()/2) - delta,
+            radius =  Math.round($("." + cp.class.mask_wheelColor).width()/2) - cp.delta,
             maskcolor = $("."+ cp.class.mask_maskColor ),
             maskmark =   $("." + cp.class.marker_mask),
-            s = Math.round( (parseInt(maskmark.css('left')) + delta)*255/radius),
+            s = Math.round( (parseInt(maskmark.css('left')))*255/radius),
             v = Math.round(Math.abs(parseInt(maskmark.css('top')) - radius)*255/radius),
             h = false,  
+            //берем цвет маски с черным градиентом. если его нет. то устанавливаем rgb(0,0,0)
             cp_color = ( maskcolor.css(cp.style_color) == "") ? "rgb(0,0,0)" : maskcolor.css(cp.style_color);
-            maskcolor.css(cp.style_color, cp_color);
-            s = (s>255) ? 255 : ((s<0) ? 0 :  s);
-            v = (v>255) ? 255 : ((v<0) ? 0 :  v);
-            if(!coords){
+            maskcolor.css(cp.style_color, cp_color);// применеие цвета или сохраниенеи старого
+
+            s = (s > 255) ? 255 : ((s < 0) ? 0 : s);
+            v = (v > 255) ? 255 : ((v < 0) ? 0 : v);
+            if(!coords){ // если нужен только параметр H (цвет дл маски)
                 h = cp.conv.RGB2HSV(cp.conv.CSScl2RGB(cp_color)).H
-            }else{
+            }else{ //(окружность)
                 h = 360 - parseInt(coords.y);
                 h = (coords.x > 90) ? (360 - h ) :  h;
             } 
+
             return { H: h,  V: v,  S: s}
         },
         init: function(init_obj){
             var cp = this
             cpk = cp.outer = $(init_obj),
             cp.append();
-            cp.getMarkers = {
-                wheel: cpk.find("." + cp.class.marker_wheel),
-                mask:  cpk.find("." + cp.class.marker_mask)
-            };
-            cp.getMask = {
-                wheel: cpk.find("." + cp.class.mask_wheel),
-                mask: cpk.find("." + cp.class.mask_mask),
-                maskColor: cpk.find("." + cp.class.mask_maskColor),
-            };
             cp.color = cp.selector.css(cp.style_color);
             cp._setColor();
             cp.drug();
         },
           /*
-  convertate and calculate color
+  Конвертация между форматами
     hex2rgb, rgb2hsv, hsv2rgb, rgb2hex, css2rgb, calcHSV
   */
         conv: { // convertate in 

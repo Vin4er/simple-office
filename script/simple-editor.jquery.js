@@ -196,6 +196,9 @@
 					case "colorpicker":
 						clicked.seColorpicker({
 							selector: clicked.find('div'),
+							change: function(){
+								set.exec(focusFrame, clickedID, false, this.color)
+							}
 						})		
 					break;
 				}
