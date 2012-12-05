@@ -2,10 +2,7 @@
   $.fn.se = function(options) {
 
   	var settings = {
-  		id: undefined,
-  		editor: undefined,
-  		iWin: undefined,
-  		iDoc: undefined,
+		edit: [],
   		browser: ($.browser.webkit?"webkit":"" ||  $.browser.safari?"safari":"" ||  $.browser.opera?"opera":"" ||  $.browser.msie?"msie":"" ||  $.browser.mozilla?"mozilla":""),
   		cssOuter: "style/se-iframe-style.css",
 		cssInner: "body {background:#fff; width:960px; display:block; min-height:1140px;word-wrap: break-word; color: black; font-family: Arial; font-size:  medium} p{margin:0px; word-wrap: break-word; } div{word-wrap: break-word; } a{cursor:pointer}",
@@ -15,26 +12,29 @@
 			'font-type': ["FontName", "FontSize"],
 			'table': ['insert-table'],// таблица удаляется и редактируется только визуально со всплывашками
 		},
-		pushed: {/*style for toolbar pushed and unpushed button*/
-			css: "outline",
-			val: "1px solid black",
-			def: "none"
+		cssButton: {/*style for toolbar pushed and unpushed button*/
+			css: {
+				"outline" : "1px solid rgba(0, 0, 0, .5)",
+			},
+			def: {
+				"outline" : "none"
+			}
 		},
 		fontsName: ['Arial', 'Tahoma', 'Impact', 'Georgia', 'Courier', 'Verdana', 'Courier New', 'Times New Roman', 'Arial Black'],
 		patterns: function(opt){
 			var set  = this;
 			switch(opt.name){
 				case "CREATE-IFRAME-BODY":
-					return "<html><head><link rel='stylesheet' href='" + opt.s_outer + "' /><style>" + opt.s_inner + "</style></head><body contenteditable='true'><div></div></body></html>";
+					return "<html><head><link rel='stylesheet' href='" + set.cssOuter + "' /><style>" + set.cssInner + "</style></head><body  id-unique='"+set.id+"' contenteditable='true'><div></div></body></html>";
 					break;
 				case "BACKDROP":
 					return "<div class='backdrop simple-editor'></div>"
 					break;
 				case "TOOLBAR":
-					return "<div class='toolbar' ></div><iframe class='iframe4e'></iframe>";
+					return "<div class='toolbar' id-unique='"+set.id+"'></div><iframe class='iframe4e'  id-unique='"+set.id+"'></iframe>";
 					break;
 				case "CREATE-PANEL-TOOLBAR":
-					return "<div class='tb_toogle' id='wrap_toolbar_first'>"+opt.tb+"</div>";
+					return "<div class='tb_toogle' id='wrap_toolbar_first'>"+set.createToolbar()+"</div>";
 					break;
 				case "DEFAULT-BUTTON-ON-TOOLBAR":
 					return "<input data-toolbar='btn-toolbar' type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'>";
@@ -90,12 +90,13 @@
 			var set  = this;
 			html = '';
 			for(var type in set.buttons){
-				var b_l = set.buttons[type].length;
+				var BT = set.buttons[type],
+				b_l = BT.length				;
 				for(var i=0; i<b_l; i++){
-					var id = set.buttons[type][i];
+					var ID = BT[i];
 					switch(type){
 						case "font-type":
-							switch(id){
+							switch(ID){
 								case "FontSize":
 									patternName =  'FONTSIZE-BUTTON-ON-TOOLBAR';
 								break;
@@ -114,7 +115,11 @@
 							patternName = 'DEFAULT-BUTTON-ON-TOOLBAR';
 						break;
 					}
-					html += set.patterns({name: patternName, t:type,  b: set.buttons[type][i]});
+					html += set.patterns({
+									name: patternName, 
+									t: type,  
+									b: ID
+							});
 				}
 			}
 	   		return html;
@@ -127,32 +132,40 @@
 	  	},
 	  	// скрыть/показать бэкдроп
 	  	backdrop: function(hide){
-	  		return (hide)?$(".backdrop.simple-editor").hide(0):$(".backdrop.simple-editor").show(0);
+	  		var bd = $(".backdrop.simple-editor");
+	  		return (hide) ? bd.hide(0) : bd.show(0);
 	  	},
 	  	// execCommand
-	  	exec: function(frame, command, bool, val){
-	  		frame.iDoc.body.focus();
-			return  frame.iWin.document.execCommand(command, bool, val);
+	  	exec: function(command, bool, val, Times){
+	  		var set =  this;
+	  		// console.log(this.iWin)
+	  		// console.log(this.iWin.document )
+	  	 	return set.getAboutFrame(set.edit[Times].editor.find('iframe')).iDoc.execCommand(command, bool, val);
+		},
+		getExec: function(command, Times){
+			var set = this;
+			return  set.getAboutFrame(set.edit[Times].editor.find('iframe')).iDoc.queryCommandValue(command);
 		},
 		// Получение редактора, получиышег фокус(произошло событие на тулбаре)
-		getAboutFrame: function(iframe){
+		getAboutFrame: function(rrz){
+			var set = this;
 			return {
-				iWin: iframe.contentWindow,
-				iDoc: iframe.contentDocument
+				iWin: rrz.get(0).contentWindow,
+				iDoc: rrz.get(0).contentDocument
 			}
 		},
 	    // Установка обработчиков событий для тулбара
-		handlerToolbar: function(opt){
-			var set = this,
-			editor = set.editor;
-			editor.find('.toolbar').on('mousedown', "[data-toolbar]", function(){
+		handlerToolbar: function(Times){
+			var set = this;
+
+			$(".toolbar [data-toolbar]").on('mousedown.'+Times , function(){
 				var clicked = $(this),
-				clickedID = clicked.attr('id'),
-				focusFrame = set.getAboutFrame(clicked.parents("[is-editor]").find('iframe').get(0));
+				clickedID = clicked.attr('id');
+				// set.id = $(this).parents('.toolbar').attr('id-unique');
 
 				switch(clicked.attr('data-type')){
 					case  "default":
-						set.exec(focusFrame, clickedID, false, null)
+						set.exec(clickedID, false, null, Times)
 					break;
 					case "font-type":
 						switch(clicked.attr('id')){
@@ -160,7 +173,7 @@
 								clicked.next().on('mousedown', 'li', function(){
 									var fontName = $(this).text().replace(/['"]*/g, '')
 									clicked.html(fontName).css('font-family', fontName)
-									set.exec(focusFrame, clickedID, false, fontName)
+									set.exec(clickedID, false, fontName, Times)
 								})
 							break;
 							case "FontSize":
@@ -172,11 +185,13 @@
 									shift = clicked.width() - marker.width(),
 									min_left = clicked.offset().left;
 									if(click_left > min_left  && click_left <= (min_left + shift)){					
-										marker.offset({left: click_left});
+										marker.offset({
+											left: click_left
+										});
 										/* /9??? */
 										var val = Math.round(marker.position().left/9)+1;
 										marker.find(".value").text(val);
-										set.exec(focusFrame, clickedID, false, val)
+										set.exec(clickedID, false, val, Times)
 									}
 								}
 								set.backdrop();
@@ -197,36 +212,105 @@
 						clicked.seColorpicker({
 							selector: clicked.find('div'),
 							change: function(){
-								set.exec(focusFrame, clickedID, false, this.color)
+								set.exec(clickedID, false, this.color, Times)
 							}
 						})		
 					break;
 				}
+				set.checkAndSet(Times)
+			})
+		},
+		/*set and unset buttons;
+			attache event
+			@param: {
+				opt: object - {doc: iDoc[item], win: iWin[item] }
+			}
+		*/
+		checkAndSet: function(Times){
+			var set = this,
+				btn_types = set.buttons;
 
+			for(var type in btn_types){
+				
+				var btn_types_name = btn_types[type];
+
+				for(var btn_name in btn_types_name){
+					var btnName =  btn_types[type][btn_name],//имя кнопки
+					getEX = set.getExec( btnName, Times),// значение кнопки
+					btn = set.edit[Times].editor.find('#' + btnName + '[data-toolbar="btn-toolbar"]');// кнопка
+					switch (type) {
+						/*@default buttons*/
+						case 'default':
+							btn.css( (getEX == "true" ) ? set.cssButton.css : set.cssButton.def) 
+						break;
+						/*@font type buttons*/
+						// case 'font-type':
+						// 	if(getEX != false && getEX != true){
+						// 		if(btn_types[type][btn_name] == "FontSize"){
+						// 			var point = btn.firstChild;
+						// 			point.style.left =  getEX*8 +"px";
+						// 			point.firstChild.innerHTML = getEX;
+						// 		}
+						// 		if(btn_types[type][btn_name] == "FontName"){
+						// 			var fname = getEX.replace(/['"]*/g, '');
+						// 			btn.value = fname;
+						// 			btn.style.fontFamily = fname;
+						// 		}
+						// 	}
+						// break; 
+						// /*@colorpicker buttons*/
+						// case 'colorpicker': 
+						// 		btn.firstChild.style.backgroundColor = getEX;
+						// break;
+					}
+				}	
+			}
+			
+		},
+		checkValue: function(Times){
+			var set = this
+			//checked button and styles text;
+			// focusFrame = set.getAboutFrame();
+			$(set.getAboutFrame(set.edit[Times].editor.find('iframe')).iDoc).on('mouseup.check mousedown.check keydown.check keypress.chec focus.check'  ,function(){
+				 set.checkAndSet(Times);
 			})
 		},
 
 
-	  	init: function(init_obj){
-	  		var set = this, 
-	  		body = $('body'),
-	  		editor, iframe, iDoc, iWin, _iframe;
-	  		set.id = new Date().getTime();
-	  		editor = set.editor = $(init_obj).attr('data-id', set.id);
-	  		editor.attr('is-editor','true').html(set.patterns({name: "TOOLBAR", id_r: set.id}))
-			_iframe = set.getAboutFrame(editor.find('iframe').get(0))
-			iWin  = _iframe.iWin;
-			iDoc  = _iframe.iDoc;
+	  	init: function(Times){
+	  		var set = this,
+	  		ed = set.edit;
+	  		mass = ed[Times];
+			var edit = mass.editor,
+			txtt = mass.text
+	  		edit.html(set.patterns({name: "TOOLBAR"}))
+	  					.attr({
+				  			'data-id' : set.id,
+				  			'is-editor': 'true'
+				  		});
+
+			iDoc  = set.getAboutFrame(edit.find('iframe')).iDoc;
 
 			iDoc.open();  
-			iDoc.write(set.patterns({name: "CREATE-IFRAME-BODY", s_outer: set.cssOuter, s_inner: set.cssInner}) );
+			iDoc.write(set.patterns({name: "CREATE-IFRAME-BODY"}) );
 			iDoc.close();
 
-			editor.find('.toolbar').append(set.patterns({name: "CREATE-PANEL-TOOLBAR", tb: set.createToolbar() }) )
+			$(iDoc.body).html("<div>" + txtt + "    "  + Times+ "</div>");
+
+			edit.find('.toolbar').append(set.patterns({name: "CREATE-PANEL-TOOLBAR" }) )
+			mass.toolbar = edit.find('.toolbar');
+
+			iframe = set.getAboutFrame(edit.find('iframe'))
+
+			// set.editor = editor;
+			// set.toolbar = toolbar;
+
+			mass.iDoc = iframe.iDoc;
+			mass.iWin = iframe.iWin;
+
+			set.handlerToolbar(Times);
+			set.checkValue(Times);
 			set._backdropCreate();
-			set.iDoc = iDoc;
-			set.iWin = iWin
-			set.handlerToolbar()
 	   	}
 	};
 
@@ -236,7 +320,14 @@
 
 
  	return this.each(function() {
- 		settings.init(this);
+ 		var _timestamp = new Date().getTime();
+ 		var th = this
+ 		settings.edit[_timestamp] = {
+						 			text: $(th).html(),
+						 			editor: $(th).addClass('is-editor-'+_timestamp),
+								}
+						
+ 		settings.init(_timestamp);
   	});
 
   };
