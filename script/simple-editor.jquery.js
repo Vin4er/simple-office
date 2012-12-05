@@ -25,13 +25,13 @@
 			var set  = this;
 			switch(opt.name){
 				case "CREATE-IFRAME-BODY":
-					return "<html><head><link rel='stylesheet' href='" + set.cssOuter + "' /><style>" + set.cssInner + "</style></head><body  id-unique='"+set.id+"' contenteditable='true'><div></div></body></html>";
+					return "<html><head><link rel='stylesheet' href='" + set.cssOuter + "' /><style>" + set.cssInner + "</style></head><body  contenteditable='true'><div></div></body></html>";
 					break;
 				case "BACKDROP":
 					return "<div class='backdrop simple-editor'></div>"
 					break;
 				case "TOOLBAR":
-					return "<div class='toolbar' id-unique='"+set.id+"'></div><iframe class='iframe4e'  id-unique='"+set.id+"'></iframe>";
+					return "<div class='toolbar'></div><iframe class='iframe4e'></iframe>";
 					break;
 				case "CREATE-PANEL-TOOLBAR":
 					return "<div class='tb_toogle' id='wrap_toolbar_first'>"+set.createToolbar()+"</div>";
@@ -157,7 +157,6 @@
 	    // Установка обработчиков событий для тулбара
 		handlerToolbar: function(Times){
 			var set = this;
-
 			$(".toolbar [data-toolbar]").on('mousedown.'+Times , function(){
 				var clicked = $(this),
 				clickedID = clicked.attr('id');
@@ -212,7 +211,8 @@
 						clicked.seColorpicker({
 							selector: clicked.find('div'),
 							change: function(){
-								set.exec(clickedID, false, this.color, Times)
+								var color = this.color;
+								set.exec(clickedID, false, color, Times)
 							}
 						})		
 					break;
@@ -285,7 +285,7 @@
 			txtt = mass.text
 	  		edit.html(set.patterns({name: "TOOLBAR"}))
 	  					.attr({
-				  			'data-id' : set.id,
+				  			'data-id' : Times,
 				  			'is-editor': 'true'
 				  		});
 

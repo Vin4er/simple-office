@@ -142,8 +142,8 @@ $.fn.seColorpicker = function(options) {
                 break;
             }
             // Юзерская функция, расчитанная на выполнение при изменении цвета
-            cp.change();
-            cp.selector.css("background-color", cp.color )
+           cp.change.call(cp);
+           cp.selector.css("background-color", cp.color )
         },
         // установка событий для перетаскивания
         drug: function(){
@@ -369,6 +369,7 @@ $.fn.seColorpicker = function(options) {
 
     return this.each(function() {
         settings.init(this);
+        settings.change()
     });
 
 };
