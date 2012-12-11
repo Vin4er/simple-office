@@ -1,6 +1,13 @@
+// Sergay lubinsky
+
+// clicked.seColorpicker({
+//     selector: $('body'),
+//     change: function(){ },// смена цвета
+//     close: function(){ }// зактрытие колорпикера
+// })  
+
 (function( $ ){
 $.fn.seColorpicker = function(options) {
-
     var settings = {
         selector: $("body"), // jQuery тег, у которого изменяем свойства
         style_color: "background-color", //свойство, которое надо изменять
@@ -42,7 +49,9 @@ $.fn.seColorpicker = function(options) {
         },
         //удаление колорпикера
         removeColorpicker: function(){
+            var cp = this;
             $(".simple-color").remove();
+             cp.close.call(cp);
         },
         // Создание колорпикера
         append: function(obj){
@@ -200,9 +209,9 @@ $.fn.seColorpicker = function(options) {
         calcHSV: function(coords){
             var cp = this,
             radius =  Math.round($("." + cp.class.mask_wheelColor).width()/2) - cp.delta,
-            maskcolor = $("."+ cp.class.mask_maskColor ),
+            maskcolor = $("."+ cp.class.mask_maskColor),
             maskmark =   $("." + cp.class.marker_mask),
-            s = Math.round( (parseInt(maskmark.css('left')))*255/radius),
+            s = Math.round((parseInt(maskmark.css('left')))*255/radius),
             v = Math.round(Math.abs(parseInt(maskmark.css('top')) - radius)*255/radius),
             h = false,  
             //берем цвет маски с черным градиентом. если его нет. то устанавливаем rgb(0,0,0)
@@ -227,6 +236,8 @@ $.fn.seColorpicker = function(options) {
             cp.color = cp.selector.css(cp.style_color);
             cp._setColor();
             cp.drug();
+            cp.change.call(cp);
+            cp.close.call(cp);
         },
           /*
   Конвертация между форматами
@@ -369,7 +380,6 @@ $.fn.seColorpicker = function(options) {
 
     return this.each(function() {
         settings.init(this);
-        settings.change()
     });
 
 };

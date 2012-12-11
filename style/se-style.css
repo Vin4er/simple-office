@@ -118,17 +118,18 @@ body{background:rgba(0,0,0,.6);}
 	width: 120px;
 }
 .toolbar .fontname a{
-outline: none;
+	outline: none;
 }
 
-.toolbar .fontname a:active ~ ul, .toolbar .fontname a:focus ~ ul , ul:hover{
+/*.toolbar .fontname a:active ~ ul, */
+.toolbar .fontname a:focus ~ ul , .toolbar .fontname  ul:hover{
 	display: block
 }
 
 
 .toolbar .fontname ul{
 	position: absolute;
-	top: 34px;
+	top: 0px;
 	left: 0;
 	z-index: 1000;
 	display: none;
@@ -170,7 +171,7 @@ outline: none;
 	position: relative;
 	display: block;	
 	height: 29px;
-	width: 70px;
+	width: 60px;
 	cursor: e-resize;
 }
 

@@ -2,7 +2,23 @@
 /******************
 	style in iframe
 *******************/
-.iWinTable {
+
+body {
+	background: #fff; 
+	width:960px; 
+	display:block; 
+	min-height:1140px;
+	word-wrap: break-word; 
+	color: black; 
+	font-family: Tahoma; 
+	font-size:  medium
+}
+p{margin:0px; word-wrap: break-word; } 
+div{word-wrap: break-word; } 
+a{cursor:pointer}
+
+
+/*.iWinTable {
 	border: 1px solid black;
 	margin: 5px;
 	border-collapse: collapse;
@@ -19,4 +35,4 @@
 }
 .iWinTable .td_wrap_text {
 	word-wrap: break-word;
-}
+}*/
