@@ -4,8 +4,10 @@
   	var settings = {
 		//будущий Массив редакторов
 		edit: [],
+		//общий класс для редакторов
+		seClassName: 'has-simple-editor',
 		// id на родительсвом элементе
-		_attr_id: "data-editor-id", 
+		attr_id: "data-editor-id", 
   		// определение браузера
   		browser: ($.browser.webkit?"webkit":"" ||  $.browser.safari?"safari":"" ||  $.browser.opera?"opera":"" ||  $.browser.msie?"msie":"" ||  $.browser.mozilla?"mozilla":""),
   		// стили для #document во iframe
@@ -24,40 +26,49 @@
 		},
 		// Список шрифтов для редактора
 		fontsName: ['Arial', 'Tahoma', 'Impact', 'Georgia', 
-						'Courier', 'Verdana',  'Courier New', 
+						'Courier', 'Verdana', 'Courier New', 
 								'Times New Roman', 'Arial Black'],
 
 /*-------------- MENU, TOOLBAR, EDIT AREA-----------------------*/
 		patterns: function(opt){
 			var set  = this;
 			switch(opt.name){
-				case "CREATE-IFRAME-BODY": // iframe из нутри
-					return "<html><head><link rel='stylesheet' href='" + set.cssOuter + "' /></head><body tabindex=2>" + opt.TEXT+ "</body></html>";
+				// iframe из нутри
+				case "CREATE-IFRAME-BODY": 
+					return "<html><head><link rel='stylesheet' href='" + set.cssOuter + "' /></head><body>" + opt.TEXT+ "</body></html>";
 					break;
-				case "BACKDROP": // Бэкдроп
+				// Бэкдроп
+				case "BACKDROP":
 					return "<div class='backdrop simple-editor'></div>"
 					break;
-				case "TOOLBAR": // тулбар + iframe
+				// тулбар + iframe
+				case "TOOLBAR": 
 					return "<div class='toolbar'></div><iframe class='iframe4e'></iframe>";
 					break;
-				case "CREATE-PANEL-TOOLBAR": // панель тулбара
+				// панель тулбара
+				case "CREATE-PANEL-TOOLBAR": 
 					return "<div class='tb_toogle' id='wrap_toolbar_first'>"+set.createToolbar()+"</div>";
 					break;
-				case "DEFAULT-BUTTON-ON-TOOLBAR": // дефолтные кнопки
+				// дефолтные кнопки
+				case "DEFAULT-BUTTON-ON-TOOLBAR":
 					return "<input data-toolbar='btn-toolbar' type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'>";
 					break;
-				case "FONTSIZE-BUTTON-ON-TOOLBAR": // font-size ползунок
+				// font-size ползунок
+				case "FONTSIZE-BUTTON-ON-TOOLBAR": 
 					var html = "<span data-toolbar='btn-toolbar' data-type = '" + opt.t + "'   id='"+opt.b+"'  class='fontsize-body e_b'><a class='fontsize-marker'><div class='value'>1</div><div class='pt'>пт</div></a></span>"
 					return "<span class='fontsize'>" + html + "</span>";
 					break;
-				case "COLORPICKER-BUTTON-ON-TOOLBAR": // Кнопка для колорпикера
+				// Кнопка для колорпикера
+				case "COLORPICKER-BUTTON-ON-TOOLBAR": 
 					return "<span data-toolbar='btn-toolbar' data-type = '" + opt.t + "' id='"+opt.b+"'  class='colorpicker-open-btn e_b'><div></div></span>";
-					break;			
-				case "FONTNAME-BUTTON-ON-TOOLBAR": // список шрифтов
+					break;	
+ 				// список шрифтов
+				case "FONTNAME-BUTTON-ON-TOOLBAR":
 					var html = "<ul >"  + set.createListsMenu(set.fontsName) + "</ul>";
 					return "<span class='fontname'><a  data-toolbar='btn-toolbar' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"' href='javascript:void(0);' tabindex='1'>dsd</a>" + html + "</span>";
-					break;			
-				case "TABLE-ADD-BUTTON-ON-TOOLBAR": // таблицы
+					break;	
+				// таблицы
+				case "TABLE-ADD-BUTTON-ON-TOOLBAR": 
 					var html = "<input data-toolbar='btn-toolbar'  type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'/>"  + set.createTable({n: 8, m: 8}, "class='toggle add-table-se'", "", "");
 					return "<span class='insert-table'>" + html + "</span>";
 					break;
@@ -76,6 +87,7 @@
 			}
 			return  list 
 		},
+
 		//Создание тулбара
 		createToolbar: function(){
 			var set  = this;
@@ -144,6 +156,7 @@
 	  		$(".backdrop.simple-editor").remove();
 	  		$("body").append(set.patterns({name: "BACKDROP"}));
 	  	},
+
 	  	// скрыть/показать бэкдроп
 	  	backdrop: function(hide){
 	  		return (hide) ? $(".backdrop.simple-editor").hide(0) : $(".backdrop.simple-editor").show(0);
@@ -171,8 +184,8 @@
 			var set = this;
 			$(".toolbar [data-toolbar]").off('mousedown.toolbar').on('mousedown.toolbar', function(){
 				var clicked = $(this),
-				clickedID = clicked.attr('id');
-				_Times = clicked.parents("["+set._attr_id+"]").attr(set._attr_id);
+					clickedID = clicked.attr('id'),
+					_Times = clicked.parents("["+set.attr_id+"]").attr(set.attr_id);
 				/*--------------------------------*/
 				switch(clicked.attr('data-type')){
 					case  "default"://Обычные кнопки
@@ -204,9 +217,7 @@
 										min_left = clicked.offset().left;
 									if(click_left > min_left+1  && click_left < (min_left + shift)){
 										//промежжуток движения маркера			
-										marker.offset({
-											left: parseInt(click_left)
-										});
+										marker.offset({	left: parseInt(click_left)});
 										var val = Math.round(marker.position().left/7)+1;
 										marker.find(".value").text(val);
 										set.exec(clickedID, false, val, _Times)
@@ -247,6 +258,8 @@
 
 				set.checkAndSet(_Times)
 			}).off('mouseup.detectframe').on('mouseup.detectframe', function(){
+				var clicked = $(this),
+					_Times = clicked.parents("["+set.attr_id+"]").attr(set.attr_id);
 				set.contentWin(_Times).focus();	//Возвращаем фокус в нужное место по onmouseup
 				set.checkAndSet(_Times)
 			})
@@ -298,7 +311,6 @@
 				_events = 'mouseup.check mousedown.check keydown.check focus.check'; // События бля проверки тулбара
 			$(set.contentWin(Times)).off(_events).on(_events, function(){
 				 set.checkAndSet(Times);
-				 console.log(this)
 			})
 			$(set.contentWin(Times).focus()).triggerHandler("mousedown"); //set default state btn
 		},
@@ -339,7 +351,7 @@
  		var th = this; // блок, в котором должен быть редактор
  		settings.edit[_timestamp] = { // массив редакторов
  			text: $(th).html(), //изначальный текст в блоке
- 			editor: $(th), // элемент   редактором
+ 			editor: $(th).addClass(settings.seClassName), // элемент   редактором
 		}	
  		settings.init(_timestamp);// инициализирую редактор
   	});
