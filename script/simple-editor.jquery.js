@@ -35,7 +35,7 @@
 			switch(opt.name){
 				// iframe из нутри
 				case "CREATE-IFRAME-BODY": 
-					return "<html><head><link rel='stylesheet' href='" + set.cssOuter + "' /></head><body>" + opt.TEXT+ "</body></html>";
+					return "<html><head><link rel='stylesheet' href='" + set.cssOuter + "' /></head><body>" + opt.TEXT + "&nbsp;</body></html>";
 					break;
 				// Бэкдроп
 				case "BACKDROP":
@@ -65,12 +65,11 @@
  				// список шрифтов
 				case "FONTNAME-BUTTON-ON-TOOLBAR":
 					var html = "<ul >"  + set.createListsMenu(set.fontsName) + "</ul>";
-					return "<span class='fontname'><a  data-toolbar='btn-toolbar' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"' href='javascript:void(0);' tabindex='1'>dsd</a>" + html + "</span>";
+					return "<span class='fontname'><a  data-toolbar='btn-toolbar' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"' href='javascript:void(0);' tabindex='1'></a>" + html + "</span>";
 					break;	
 				// таблицы
 				case "TABLE-ADD-BUTTON-ON-TOOLBAR": 
-					var html = "<input data-toolbar='btn-toolbar'  type='button' value='' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"'/>"  + set.createTable({n: 8, m: 8}, "class='toggle add-table-se'", "", "");
-					return "<span class='insert-table'>" + html + "</span>";
+					return "<span class='insert-table'><a href='javascript:void(0);'  data-toolbar='btn-toolbar'  type='button'  tabindex='2' class='e_b' data-type = '" + opt.t + "' id='"+opt.b+"' ></a>" + set.createTable({n: 8, m: 8}, "class='toggle add-table-se'", "", "") + "</span>";
 					break;
 			}
 		},
@@ -198,12 +197,14 @@
 						switch(clicked.attr('id')){
 							case "FontName":
 								/* Установка шрифта*/
-								clicked.next().off('mousedown.fontset').on('mousedown.fontset', 'li', function(){ 
+								var list = clicked.next().show()
+								list.off('click.detectframe mousedown.fontset').on('mousedown.fontset', 'li', function(){ 
 									var fontName = $(this).text().replace(/['"]*/g, '');//оставляем только текст 
 									clicked.html(fontName).css('font-family', fontName);
 									set.exec(clickedID, false, fontName, _Times);
-								}).off('mouseup.detectframe').on('mouseup.detectframe', 'li', function(){
+								}).on('click.detectframe', 'li', function(){
 									set.contentWin(_Times).focus();	//Возвращаем фокус в нужное место по onmouseup
+									list.hide()
 								})
 							break;
 							/*--------------------------------*/
@@ -253,6 +254,31 @@
 								set.contentWin(_Times).focus();//Возвращаем фокус в нужное место
 							}
 						})	
+					break;
+					case "table":
+						var table = clicked.next().show();
+						table.off('mouseenter.toolbar mousedown.toolbar').on('mouseenter.toolbar', 'td', function(){
+							$(".hover-line").removeClass('hover-line')
+							$(".hovered").removeClass('hovered')
+							var over = $(this),
+								tSize = {
+									m: (over.index() + 1), //horizont,
+									n: (over.parent().addClass('hovered').index() + 1)//vertical
+								}
+								$(".toolbar tr:lt(" + tSize.n + ") td:nth-child(" + tSize.m +  "), .toolbar tr.hovered td:lt(" + tSize.m + ")").addClass("hover-line");
+						}).on('mousedown.toolbar', 'td', function(){
+							var	mdown = $(this),
+								tSize = {
+									m: (mdown.index() + 1), //horizont,
+									n: (mdown.parent().index() + 1)//vertical
+								},
+								ins_table = "<div>"+set.createTable(tSize, "class='iframe-table'", "", "<div class='wrap_text'></div>")+"</div><div>&nbsp;</div>"
+								table.hide()
+							
+								set.exec('InsertHtml', false, ins_table, _Times)
+								set.contentWin(_Times).focus();	//Возвращаем фокус в нужное место по onmouseup
+
+						})
 					break;
 				}
 
@@ -308,11 +334,23 @@
 		},
 		checkValue: function(Times){
 			var set = this,// Проверяем все значения тулбара при событиях
-				_events = 'mouseup.check mousedown.check keydown.check focus.check'; // События бля проверки тулбара
+				_events = 'mouseup.check mousedown.check keyup.check  focus.check'; // События бля проверки тулбара
 			$(set.contentWin(Times)).off(_events).on(_events, function(){
 				 set.checkAndSet(Times);
 			})
-			$(set.contentWin(Times).focus()).triggerHandler("mousedown"); //set default state btn
+			// $(set.contentWin(Times).document.body).off('keypress').on('keypress', function(event){
+
+			// 	if(event.which == 13){
+			// 		var child = this.firstChild
+			// 		if(child.nodeName == "#text"){
+			// 			$(child).wrapAll("<div class='wrapped'></div>");
+			// 		} 
+			// 		event.preventDefault();
+			// 		set.exec('InsertHtml', false, '<div  class="wrapped">', Times)
+			// 	}
+			// })
+			
+			$(set.contentWin(Times).focus()).triggerHandler("mousedown.check"); //set default state btn
 		},
 
 

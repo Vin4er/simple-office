@@ -10,7 +10,9 @@
 	-moz-user-select: none;
 }
 body{background:rgba(0,0,0,.6);}
-
+a:focus{
+	outline: none;
+}
 .has-simple-editor{
 	font-size:13px;
 	height:1200px;
@@ -127,9 +129,10 @@ body{background:rgba(0,0,0,.6);}
 }
 
 /*.toolbar .fontname a:active ~ ul, */
-.toolbar .fontname a:focus ~ ul , .toolbar .fontname  ul:hover{
-	display: block
-}
+/*.toolbar .fontname a:active ~ ul , .toolbar .fontname  ul:hover, 
+.toolbar .insert-table a:active ~ .add-table-se,  .toolbar .insert-table .add-table-se:hover{
+	display: block;
+}*/
 
 
 .toolbar .fontname ul{
@@ -145,9 +148,7 @@ body{background:rgba(0,0,0,.6);}
 	background-color: white;
 	border: 1px solid #CCC;
 	border-radius: 2px;
-	-webkit-background-clip: padding-box;
-	-moz-background-clip: padding;
-	background-clip: padding-box;
+
 }
 .toolbar .fontname ul li{
 	background: white;
@@ -219,26 +220,35 @@ body{background:rgba(0,0,0,.6);}
 	background: url(../icons/icons.png) no-repeat; 
 	background-position: -160px;
 }
+
 .toolbar .insert-table{
+	display: inline-block;
+	position: relative;
 	text-align: center;
-	cursor: e-resize;
 }
+
 .toolbar .insert-table .add-table-se{
 	display: none;
-	width: 200px;
-	height: 135px;
-	position: relative;
-	left: -35px;
-	top: 35px;
+	position: absolute;
+	left: 0px;
+	top: 0px;
 	z-index: 9999999;
+	background: white;
+	box-shadow:	 3px 3px 10px rgba(0,0,0,.6);
 }
+
+.toolbar .insert-table .add-table-se .hover-line{
+	background-color: rgba(0,0,0,.2);
+}
+
 .toolbar .insert-table .add-table-se td{
-	padding: 0px;
-	border: 1px solid gray;
+	padding: 7px 11px;
+	border: 1px solid #ccc;
 }
-.toolbar .insert-table .add-table-se td:hover{
-	background: gray;
-}
+/*.toolbar .insert-table .add-table-se td:hover{
+	background: #ccc
+}*/
+
 .help-table-line{
 	position: absolute;
 	z-index: 999999999; 

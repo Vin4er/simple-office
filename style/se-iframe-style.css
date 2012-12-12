@@ -5,34 +5,42 @@
 
 body {
 	background: #fff; 
-	width:960px; 
-	display:block; 
+	width: 960px; 
+	display: block; 
 	min-height:1140px;
-	word-wrap: break-word; 
 	color: black; 
 	font-family: Tahoma; 
-	font-size:  medium
 }
-p{margin:0px; word-wrap: break-word; } 
-div{word-wrap: break-word; } 
+
+div{
+	display: block;
+	width: 100%;
+	line-height: 20px;
+	padding: 4px 1px;
+	min-height:  14px;
+
+}
+
+
+
 a{cursor:pointer}
 
 
-/*.iWinTable {
+.iframe-table {
 	border: 1px solid black;
-	margin: 5px;
+	margin: 10px;
 	border-collapse: collapse;
 }
-.iWinTable td{
+.iframe-table td{
 	border: 1px solid black;
 	text-align: left;
 }
-.iWinTable .wrap_text {
+.iframe-table .wrap_text {
 	min-height: 30px;
 	padding: 2px 5px;
 	min-width: 50px;
 	max-width: 50px;
 }
-.iWinTable .td_wrap_text {
+.iframe-table .td_wrap_text {
 	word-wrap: break-word;
-}*/
+}
