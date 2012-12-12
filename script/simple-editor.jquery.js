@@ -35,7 +35,7 @@
 			switch(opt.name){
 				// iframe из нутри
 				case "CREATE-IFRAME-BODY": 
-					return "<html><head><link rel='stylesheet' href='" + set.cssOuter + "' /></head><body>" + opt.TEXT + "&nbsp;</body></html>";
+					return "<html><head><link rel='stylesheet' href='" + set.cssOuter + "' /></head><body>" + opt.TEXT + "</body></html>";
 					break;
 				// Бэкдроп
 				case "BACKDROP":
@@ -334,22 +334,12 @@
 		},
 		checkValue: function(Times){
 			var set = this,// Проверяем все значения тулбара при событиях
-				_events = 'mouseup.check mousedown.check keyup.check  focus.check'; // События бля проверки тулбара
+				_events = 'mouseup.check mousedown.check keyup.check'; // События бля проверки тулбара
 			$(set.contentWin(Times)).off(_events).on(_events, function(){
 				 set.checkAndSet(Times);
 			})
-			// $(set.contentWin(Times).document.body).off('keypress').on('keypress', function(event){
 
-			// 	if(event.which == 13){
-			// 		var child = this.firstChild
-			// 		if(child.nodeName == "#text"){
-			// 			$(child).wrapAll("<div class='wrapped'></div>");
-			// 		} 
-			// 		event.preventDefault();
-			// 		set.exec('InsertHtml', false, '<div  class="wrapped">', Times)
-			// 	}
-			// })
-			
+
 			$(set.contentWin(Times).focus()).triggerHandler("mousedown.check"); //set default state btn
 		},
 
