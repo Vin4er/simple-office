@@ -21,6 +21,9 @@ div{
 
 }
 
+div:focus {
+	outline: none;
+}
 
 
 a{cursor:pointer}

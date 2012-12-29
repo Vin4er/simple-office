@@ -35,7 +35,7 @@
 			switch(opt.name){
 				// iframe из нутри
 				case "CREATE-IFRAME-BODY": 
-					return "<html><head><link rel='stylesheet' href='" + set.cssOuter + "' /></head><body>" + opt.TEXT + "</body></html>";
+					return "<html><head><link rel='stylesheet' href='" + set.cssOuter + "' /></head><body><div>" + opt.TEXT + "</div></body></html>";
 					break;
 				// Бэкдроп
 				case "BACKDROP":
@@ -336,11 +336,10 @@
 			var set = this,// Проверяем все значения тулбара при событиях
 				_events = 'mouseup.check mousedown.check keyup.check'; // События бля проверки тулбара
 			$(set.contentWin(Times)).off(_events).on(_events, function(){
-				 set.checkAndSet(Times);
+				 set.checkAndSet(Times)
 			})
 
-
-			$(set.contentWin(Times).focus()).triggerHandler("mousedown.check"); //set default state btn
+			$(set.contentWin(Times).focus())//.triggerHandler("mousedown.check"); //set default state btn
 		},
 
 
@@ -360,11 +359,11 @@
 			iDoc.write(set.patterns({name: "CREATE-IFRAME-BODY", TEXT: text } ));
 			iDoc.close();
  			
- 			iDoc.designMode = 'on'; // Включаем редактирование
-
+ 			 iDoc.designMode = 'on'
 			set.handlerToolbar(); // Установка тулбара
 			set.checkValue(Times); // и значений кнопок
 
+ 			$(set.contentWin(Times)).mousedown(); //set default state btn
 			set._backdropCreate();
 	   	}
 	};
