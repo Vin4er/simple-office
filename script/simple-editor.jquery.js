@@ -55,7 +55,7 @@
 					break;
 				// font-size ползунок
 				case "FONTSIZE-BUTTON-ON-TOOLBAR": 
-					var html = "<span data-toolbar='btn-toolbar' data-type = '" + opt.t + "'   id='"+opt.b+"'  class='fontsize-body e_b'><a class='fontsize-marker'><div class='value'>1</div><div class='pt'>пт</div></a></span>"
+					var html = "<span data-toolbar='btn-toolbar' data-type='" + opt.t + "'   id='"+opt.b+"'  class='fontsize-body e_b'><a class='fontsize-marker'><div class='value'>1</div><div class='pt'>пт</div></a></span>"
 					return "<span class='fontsize'>" + html + "</span>";
 					break;
 				// Кнопка для колорпикера
@@ -359,7 +359,7 @@
 			iDoc.write(set.patterns({name: "CREATE-IFRAME-BODY", TEXT: text } ));
 			iDoc.close();
  			
- 			 iDoc.designMode = 'on'
+ 			iDoc.designMode = 'on'
 			set.handlerToolbar(); // Установка тулбара
 			set.checkValue(Times); // и значений кнопок
 

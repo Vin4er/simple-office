@@ -287,6 +287,7 @@ var se = {
   				},
   				function(e){
 
+// надо экспереминтировать с изменением max-width: 50px;
   					console.log('mouseover')
   				// 	var moved = this,
   				// 	cursor = ["default", "e-resize", "s-resize"]
@@ -294,7 +295,7 @@ var se = {
 						// 	win.document.body.style.cursor = type;
   				// 	},
   				// 	moveCoord = {
-  				// 		r: moved.offsetLeft + moved.offsetWidth  , // bottom
+  				// 		r: moved.offsetLeft + moved.offsetWidth, // bottom
   				// 		b: moved.offsetTop + moved.offsetHeight,   // right
   				// 	}
   				// 	var caseCursor = 0;		

@@ -10,6 +10,8 @@ body {
 	min-height:1140px;
 	color: black; 
 	font-family: Tahoma; 
+	overflow: hidden;
+	word-wrap: break-word;
 }
 
 div{

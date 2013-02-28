@@ -1,4 +1,4 @@
-// Sergay lubinsky
+// Sergey lubinsky
 
 // clicked.seColorpicker({
 //     selector: $('body'),
@@ -133,9 +133,9 @@ $.fn.seColorpicker = function(options) {
 
                     //Установка позиции "y" если эта координата равна NaN - уточняем промежуток[0, 180]
                     y  = isNaN(y) && x==90
-                            ? (baseY<0) 
+                            ? baseY<0
                                 ? 180 
-                                : (baseY>0)
+                                : baseY>0
                                     ? 0 
                                     : y 
                             : y;
@@ -257,7 +257,9 @@ $.fn.seColorpicker = function(options) {
                 for(var i in HEX){
                     if(HEX[i] == '0'){
                         str = str + HEX[i]
-                    }else  break;  
+                    }else{  
+                        break
+                    }  
                 }
                 if(str.length == 6){
                     return { R: 0,  G: 0,  B: 0 }
