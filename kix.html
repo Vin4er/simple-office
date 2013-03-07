@@ -16,20 +16,23 @@
 ##Contacts: Vin4er1@yandex.ru; http://vkontakte.ru/fucked_brain_php;
 #####################################################################
  -->
-<div  class='edit' style='margin: 0px auto; width: 400px; min-height:100%;'>
+<div  class='edit' style='margin: 0px auto; width: 400px; min-height:100%; border:1px solid black'>
 
 </div>
 
 
   <script>
-    $(".edit").append("<p class='kix-line' />");
-    var cursor = $("<div class='kix-cursor'  style='border-right:2px solid black; display: inline;'>&nbsp;</div>")
-    $(".edit .kix-line:first").append(cursor);
+    
+    var newLine = $("<div class='kix-line' />")
+    var cursor = $("<div class='kix-cursor'  style='border-right:2px solid black; display: inline;'>&nbsp;</div>");
+        
+        $(".edit").append(newLine.clone());
+        $(".edit .kix-line:first").append(cursor);
     
     $(function(){
 
         //Миигание курсора
-        setInterval(function(){
+        var interval = setInterval(function(){
             cursor.animate({"opacity": "0"}, 600, function(){
                 cursor.css("opacity", "1");
             });
@@ -38,27 +41,76 @@
 //события
         $(document).live('keydown', function(eventObject){
             switch(eventObject.which){
-              case 8: //backspace
-                cursor.prev(".kix-char").remove()
+                case 8: //backspace
+                    cursor.prev(".kix-char").remove()
                 break; 
-              case 46: //del
-                cursor.next(".kix-char").remove()
+                case 46: //del
+                    cursor.next(".kix-char").remove()
                 break;  
-              case 37: //left
-                obj = $(".edit .kix-line .kix-cursor").prev()
-                $(".edit .kix-line .kix-cursor").remove()   
-                obj.before(cursor)
+
+                case 37: //left
+                    obj = $(".edit .kix-line .kix-cursor").prev()
+                    $(".edit .kix-line .kix-cursor").remove()   
+                    obj.before(cursor)
+                break;   
+                case 38: //top
+                    currIndexChar = $(".edit .kix-line .kix-cursor").prev().index() 
+                    console.log("currIndexChar " + currIndexChar)
+
+                        topLine =  $(".edit .kix-line .kix-cursor").parents(".kix-line").prev();
+                        topCharSize = topLine.find(".kix-char").size()
+                        console.log("topCharSize " + topCharSize)
+                    if( currIndexChar <= topCharSize){
+                        var afTerCursor  = topLine.find(".kix-char").eq(currIndexChar)
+                        $(".edit .kix-line .kix-cursor").remove()
+                        afTerCursor.after(cursor)
+                    }else{
+                        $(".edit .kix-line .kix-cursor").remove()
+                         topLine.find(".kix-char:last").after(cursor)
+                    }
                 break;  
-              case 39: //right
-                obj = $(".edit .kix-line .kix-cursor").next()
-                $(".edit .kix-line .kix-cursor").remove()   
-                obj.before(cursor)
+
+                case 39: //right
+                    obj = $(".edit .kix-line .kix-cursor").next()
+                    $(".edit .kix-line .kix-cursor").remove()   
+                    obj.after(cursor)
                 break; 
+   
+                case 40: //bottom
+                    currIndexChar = $(".edit .kix-line .kix-cursor").prev().index() 
+                    console.log("currIndexChar " + currIndexChar)
+
+                        topLine =  $(".edit .kix-line .kix-cursor").parents(".kix-line").next();
+                        topCharSize = topLine.find(".kix-char").size()
+                        console.log("topCharSize " + topCharSize)
+                    if( currIndexChar <= topCharSize){
+                        var afTerCursor  = topLine.find(".kix-char").eq(currIndexChar)
+                        $(".edit .kix-line .kix-cursor").remove()
+                        afTerCursor.after(cursor)
+                    }else{
+                        $(".edit .kix-line .kix-cursor").remove()
+                         topLine.find(".kix-char:last").after(cursor)
+                    }
+                break; 
+
+                case 13: //enter
+                //обработать перенос строки
+                    cursor.parent(".kix-line").after(newLine.clone())
+                    $(".edit .kix-line .kix-cursor").remove();
+                    $(".edit .kix-line:last").append(cursor);
+                break; 
+
             }
-         
+                 //Миигание курсора
+                 clearInterval(interval)
+            interval = setInterval(function(){
+                cursor.animate({"opacity": "0"}, 600, function(){
+                    cursor.css("opacity", "1");
+                });
+            }, 100)
         })
 
-        $(".kix-char").on("mousedown",function(){ console.log(this)
+        $(".kix-char").live("mousedown", function(){ console.log(this)
             $(".edit .kix-line .kix-cursor").remove();
             $(this).before(cursor)
         })
