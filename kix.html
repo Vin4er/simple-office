@@ -24,19 +24,23 @@
   <script>
     
     var newLine = $("<div class='kix-line' />")
-    var cursor = $("<div class='kix-cursor'  style='border-right:2px solid black; display: inline;'>&nbsp;</div>");
+    var cursor = $("<div class='kix-cursor'  style='border-right:2px solid blue; margin-left: -2px; display: inline;'></div>");
         
         $(".edit").append(newLine.clone());
         $(".edit .kix-line:first").append(cursor);
     
+    var removeCursor = function(){
+        $(".edit .kix-line .kix-cursor").remove()
+    }
+
     $(function(){
 
         //Миигание курсора
-        var interval = setInterval(function(){
-            cursor.animate({"opacity": "0"}, 600, function(){
-                cursor.css("opacity", "1");
-            });
-        }, 100)
+        // var interval = setInterval(function(){
+        //     cursor.animate({"opacity": "0"}, 600, function(){
+        //         cursor.css("opacity", "1");
+        //     });
+        // }, 100)
 
 //события
         $(document).live('keydown', function(eventObject){
@@ -46,72 +50,95 @@
                 break; 
                 case 46: //del
                     cursor.next(".kix-char").remove()
+                break;   
+
+                case 38: //top
+                    currIndexChar = $(".edit .kix-line .kix-cursor").prev().index() 
+                    topLine =  $(".edit .kix-line .kix-cursor").parents(".kix-line").prev();
+                    topCharSize = topLine.find(".kix-char").size();
+
+                    if(topLine.size() > 0){  // если предыдущяя строка есть 
+                        if( currIndexChar < topCharSize){
+                            var afTerCursor  = topLine.find(".kix-char").eq(currIndexChar)
+                            removeCursor();
+                            afTerCursor.after(cursor)
+
+                        }else{ // если первая строка
+                            removeCursor()
+                            topLine.find(".kix-char:last").after(cursor)
+                        }
+                    }
+                break;  
+
+                case 40: //bottom
+                    currIndexChar = $(".edit .kix-line .kix-cursor").prev().index() 
+                    topLine =  $(".edit .kix-line .kix-cursor").parents(".kix-line").next();
+                    topCharSize = topLine.find(".kix-char").size()
+                        
+                    if(topLine.size()>0){     // если следующаяя строка есть 
+
+                        if( currIndexChar < topCharSize){
+                            var afTerCursor  = topLine.find(".kix-char").eq(currIndexChar)
+                            removeCursor()
+                            afTerCursor.after(cursor)
+
+                        }else{ // если последняяя строчка
+                            removeCursor()
+                            topLine.find(".kix-char:last").after(cursor)
+                        }
+                    }
+                break; 
+
+                case 39: //right
+                    obj = $(".edit .kix-line .kix-cursor").next()
+                    if(obj.size() > 0){ // если следующий символ есть
+                        removeCursor()   
+                        obj.after(cursor)  
+                    }else{ // если последний сивол
+                        
+                        var rigntNextBottom  = cursor.parents(".kix-line").next();
+                        if(rigntNextBottom.size() > 0 ){ // если если есть внижу строчка
+                            removeCursor() 
+                            rigntNextBottom.prepend(cursor)
+                        }
+                    }
                 break;  
 
                 case 37: //left
                     obj = $(".edit .kix-line .kix-cursor").prev()
-                    $(".edit .kix-line .kix-cursor").remove()   
-                    obj.before(cursor)
-                break;   
-                case 38: //top
-                    currIndexChar = $(".edit .kix-line .kix-cursor").prev().index() 
-                    console.log("currIndexChar " + currIndexChar)
+                    if(obj.size() > 0){ // если следующий символ есть                   
+                        removeCursor()  
+                        obj.before(cursor)
+                    }else{// если первый сивол
 
-                        topLine =  $(".edit .kix-line .kix-cursor").parents(".kix-line").prev();
-                        topCharSize = topLine.find(".kix-char").size()
-                        console.log("topCharSize " + topCharSize)
-                    if( currIndexChar <= topCharSize){
-                        var afTerCursor  = topLine.find(".kix-char").eq(currIndexChar)
-                        $(".edit .kix-line .kix-cursor").remove()
-                        afTerCursor.after(cursor)
-                    }else{
-                        $(".edit .kix-line .kix-cursor").remove()
-                         topLine.find(".kix-char:last").after(cursor)
-                    }
-                break;  
-
-                case 39: //right
-                    obj = $(".edit .kix-line .kix-cursor").next()
-                    $(".edit .kix-line .kix-cursor").remove()   
-                    obj.after(cursor)
-                break; 
-   
-                case 40: //bottom
-                    currIndexChar = $(".edit .kix-line .kix-cursor").prev().index() 
-                    console.log("currIndexChar " + currIndexChar)
-
-                        topLine =  $(".edit .kix-line .kix-cursor").parents(".kix-line").next();
-                        topCharSize = topLine.find(".kix-char").size()
-                        console.log("topCharSize " + topCharSize)
-                    if( currIndexChar <= topCharSize){
-                        var afTerCursor  = topLine.find(".kix-char").eq(currIndexChar)
-                        $(".edit .kix-line .kix-cursor").remove()
-                        afTerCursor.after(cursor)
-                    }else{
-                        $(".edit .kix-line .kix-cursor").remove()
-                         topLine.find(".kix-char:last").after(cursor)
+                        var rigntNextBottom  = cursor.parents(".kix-line").prev();
+                        if(rigntNextBottom.size() > 0 ){// если если есть внижу строчка
+                            removeCursor() 
+                            rigntNextBottom.append(cursor)
+                        }
                     }
                 break; 
 
                 case 13: //enter
                 //обработать перенос строки
+                 eventObject.preventDefault()
                     cursor.parent(".kix-line").after(newLine.clone())
-                    $(".edit .kix-line .kix-cursor").remove();
+                    removeCursor()
                     $(".edit .kix-line:last").append(cursor);
                 break; 
 
             }
                  //Миигание курсора
-                 clearInterval(interval)
-            interval = setInterval(function(){
-                cursor.animate({"opacity": "0"}, 600, function(){
-                    cursor.css("opacity", "1");
-                });
-            }, 100)
+            //      clearInterval(interval)
+            // interval = setInterval(function(){
+            //     cursor.animate({"opacity": "0"}, 600, function(){
+            //         cursor.css("opacity", "1");
+            //     });
+            // }, 100)
         })
 
         $(".kix-char").live("mousedown", function(){ console.log(this)
-            $(".edit .kix-line .kix-cursor").remove();
+            removeCursor()
             $(this).before(cursor)
         })
 

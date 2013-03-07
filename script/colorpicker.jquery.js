@@ -239,7 +239,7 @@ $.fn.seColorpicker = function(options) {
             cp.change.call(cp);
             cp.close.call(cp);
         },
-          /*
+/*
   Конвертация между форматами
     hex2rgb, rgb2hsv, hsv2rgb, rgb2hex, css2rgb, calcHSV
   */
@@ -374,6 +374,7 @@ $.fn.seColorpicker = function(options) {
             },
         },
     };
+
 
     if (options){ 
         $.extend(settings, options); // при этом важен порядок совмещения
