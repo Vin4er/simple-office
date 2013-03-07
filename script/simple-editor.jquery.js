@@ -76,7 +76,7 @@
 		/*
 			ВЫПАДАЮЩЕЕ МЕНЮ ДЛЯ ВЫБОРА  шрифта
 			@param: _array: array of "font-family"
-			@return htnl-string
+			@return html-string
 		*/
 		createListsMenu: function(_array){
 			var list = "",
@@ -217,7 +217,7 @@
 										shift = clicked.width() - marker.width(),
 										min_left = clicked.offset().left;
 									if(click_left > min_left+1  && click_left < (min_left + shift)){
-										//промежжуток движения маркера			
+										//промежуток движения маркера			
 										marker.offset({	left: parseInt(click_left)});
 										var val = Math.round(marker.position().left/7)+1;
 										marker.find(".value").text(val);
