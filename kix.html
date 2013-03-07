@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+     <!--Задаем кодировку страницы-->
+  <title>The Simple Editor v1.0</title>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+</head>
+<body>
+ <!--
+#####################################################################
+##Name: The KIX KIX KIX Simple Editor;
+##Version:  v1.0;
+##Date:December 2011;
+##Developer: Lubinskiy Sergey;
+##Contacts: Vin4er1@yandex.ru; http://vkontakte.ru/fucked_brain_php;
+#####################################################################
+ -->
+<div  class='edit' style='margin: 0px auto; width: 400px; min-height:100%;'>
+
+</div>
+
+
+  <script>
+    $(".edit").append("<p class='kix-line' />");
+    var cursor = $("<div class='kix-cursor'  style='border-right:2px solid black; display: inline;'>&nbsp;</div>")
+    $(".edit .kix-line:first").append(cursor);
+    
+    $(function(){
+
+        //Миигание курсора
+        setInterval(function(){
+            cursor.animate({"opacity": "0"}, 600, function(){
+                cursor.css("opacity", "1");
+            });
+        }, 100)
+
+//события
+        $(document).live('keydown', function(eventObject){
+            switch(eventObject.which){
+              case 8: //backspace
+                cursor.prev(".kix-char").remove()
+                break; 
+              case 46: //del
+                cursor.next(".kix-char").remove()
+                break;  
+              case 37: //left
+                obj = $(".edit .kix-line .kix-cursor").prev()
+                $(".edit .kix-line .kix-cursor").remove()   
+                obj.before(cursor)
+                break;  
+              case 39: //right
+                obj = $(".edit .kix-line .kix-cursor").next()
+                $(".edit .kix-line .kix-cursor").remove()   
+                obj.before(cursor)
+                break; 
+            }
+         
+        })
+
+        $(".kix-char").on("mousedown",function(){ console.log(this)
+            $(".edit .kix-line .kix-cursor").remove();
+            $(this).before(cursor)
+        })
+
+        $(document).live('keypress', function(eventObject){
+            cursor.before("<span class='kix-char'>" + String.fromCharCode(eventObject.which) + "</span>")
+        })
+
+
+})
+</script>
+</body>
+</html>
