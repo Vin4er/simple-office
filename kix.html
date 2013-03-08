@@ -16,13 +16,91 @@
 ##Contacts: Vin4er1@yandex.ru; http://vkontakte.ru/fucked_brain_php;
 #####################################################################
  -->
+ <button onclick="clicked()" >asd</button>
+ <button onclick="paste()" >asd22</button>
 <div  class='edit' style='margin: 0px auto; width: 400px; min-height:100%; border:1px solid black'>
 
 </div>
 
 
   <script>
-    
+function toHTML(docFragment){
+    var d = document.createElement('div');
+    d.appendChild(docFragment);
+    return d.innerHTML;
+}
+
+
+function toDOM(HTMLstring){
+    var d = document.createElement('div');
+    d.innerHTML = HTMLstring;
+    var docFrag = document.createDocumentFragment();
+    while (d.firstChild) {
+        docFrag.appendChild(d.firstChild)
+    };
+    return docFrag;
+}
+
+
+function getSelText(){
+    /*
+получаем выделенный текст
+
+infa: http://xdan.ru/Zamenit-videlennij-tekst-na-stranice-s-pomoshhju-JS.html
+    */
+var ie = false;
+    if ( window.getSelection ) { 
+        var selectedText = window.getSelection(); 
+    } else if ( document.getSelection ) { 
+        var selectedText = document.getSelection(); 
+    } else if ( document.selection ) { 
+        ie = true;
+        var selectedText = document.selection.createRange(); 
+    } 
+    var html = ""
+    if(!ie){
+        // console.log(selectedText)//  просто выведет выделенный текст без тегов 
+        var theParent = selectedText.getRangeAt(0).cloneContents(); 
+        // console.log("html:" + toHTML(theParent)) // собственно выделенный кусок кода 
+        // console.log($(toHTML(theParent)).find('.kix-char'))//.css("font-size",'30px')
+        html = toHTML(theParent)
+    }else{
+        alert(selectedText.text) // текст
+        alert(selectedText.htmlText) // выделенный кусок кода
+    }
+    /*
+перехуячиваем выделенный текст
+    */
+     var ie = false;
+     var tt  = $("<dic class='kix-chlenix' />");
+     tt.append(html)
+// Нудное css св-во
+     tt.find(".kix-char").css("font-size"," 30px");
+
+     html = tt.html()
+
+    if(!ie){
+     var rang= selectedText.getRangeAt(0);
+     rang.deleteContents()
+     if($.browser.mozilla){
+          var rangeObj = document.createRange();
+          var documentFragment = rangeObj.createContextualFragment(html);
+     }else{
+          var documentFragment = toDOM(html)
+     }
+     rang.collapse(false)
+     rang.insertNode(documentFragment);
+    }else{
+     selectedText.pasteHTML(html)
+    }
+}
+
+
+
+    function clicked(){
+       getSelText() 
+    }
+
     var newLine = $("<div class='kix-line' />")
     var cursor = $("<div class='kix-cursor'  style='border-right:2px solid blue; margin-left: -2px; display: inline;'></div>");
         
@@ -95,7 +173,7 @@
                         removeCursor()   
                         obj.after(cursor)  
                     }else{ // если последний сивол
-                        
+
                         var rigntNextBottom  = cursor.parents(".kix-line").next();
                         if(rigntNextBottom.size() > 0 ){ // если если есть внижу строчка
                             removeCursor() 
@@ -141,7 +219,7 @@
             removeCursor()
             $(this).before(cursor)
         })
-
+       
         $(document).live('keypress', function(eventObject){
             cursor.before("<span class='kix-char'>" + String.fromCharCode(eventObject.which) + "</span>")
         })
