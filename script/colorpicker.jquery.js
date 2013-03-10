@@ -1,10 +1,12 @@
-// Sergey lubinsky
+/*
+# Name: se-colopicker;
+# Version:  v4.0;
+# Date: Jan 2013;
+# Developer: Lubinskiy Sergey;
+# Contacts: Vin4er1@yandex.ru; http://vk.com/sergey.lyubinsky;
+*/
 
-// clicked.seColorpicker({
-//     selector: $('body'),
-//     change: function(){ },// смена цвета
-//     close: function(){ }// зактрытие колорпикера
-// })  
+
 
 (function( $ ){
 $.fn.seColorpicker = function(options) {
@@ -242,7 +244,10 @@ $.fn.seColorpicker = function(options) {
 /*
   Конвертация между форматами
     hex2rgb, rgb2hsv, hsv2rgb, rgb2hex, css2rgb, calcHSV
-  */
+
+    Алгоритм переработки из одной цветовой модели в другую - честно спизжжен из нескольких колорпикеров, разобранных дабы понять как этот щит работает,
+    и чутка видоизменен и дописан
+*/
         conv: { // convertate in 
             cp: this,
             Hex2RGB: function(HEX){

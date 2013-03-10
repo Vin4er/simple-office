@@ -1,3 +1,11 @@
+/*
+# Name: jQuery Simple Editor;
+# Version:  v2.0;
+# Date: Jan 2013;
+# Developer: Lubinskiy Sergey;
+# Contacts: Vin4er1@yandex.ru; http://vk.com/sergey.lyubinsky;
+*/
+
 (function( $ ){
   $.fn.se = function(options) {
 
