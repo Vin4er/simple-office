@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="format-detection">
+		<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=PT+Sans:400,700">
+		<link rel="stylesheet" href="/assets/css/css.css">
+		<!--if lt IE 9
+		script(src='https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js')
+		script(src='https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js')
+		-->
+	</head>
+	<body>
+		<div id="page" class="page">
+		</div>
+		<div style="display: none"></div><!-- import scripts -->
+		<script src="/assets/js/app.min.js"></script>
+		<script id="contentEditableTemplate" type="text/template">
+			<div class="texteditabler-bar"></div>
+			<iframe contenteditable="true" class="texteditabler-editable"></iframe>
+		</script>
+		<script id="editableTemplate" type="text/template">
+			<html>
+				<head></head>
+				<body>
+					<div class="editable-line"></div>
+				</body>
+			</html>
+		</script>
+		<script id="toolbarTemplate" type="text/template">
+			<div class="texteditabler-bar-buttonwrap">
+				<% _.each(defaults.split('|'), function(item){ %>
+				
+				<button data-action="<%= item %>" class="texteditabler-bar-button default <%=item %>"> </button>
+				<% }) %>
+			</div>
+			<!-- <% _.each(fontType.split('|'), function(item){ %>-->
+			<!-- #[button( data-action!="<%= item %>",  class!="texteditabler-bar-button fontType <%=item %>") ]-->
+			<!-- <% }) %>-->
+			<!-- <% _.each(colorpicker.split('|'), function(item){ %>-->
+			<!-- #[button( data-action!="<%= item %>",  class!="texteditabler-bar-button colorpicker <%=item %>") ]-->
+			<!-- <% }) %>-->
+			<!-- <% _.each(table.split('|'), function(item){ %>-->
+			<!-- #[button( data-action!="<%= item %>",  class!="texteditabler-bar-button  table <%=item %>") ]-->
+			<!-- <% }) %>-->
+		</script>
+	</body>
+</html>

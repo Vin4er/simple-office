@@ -1,0 +1,24 @@
+//- подключаем шаблон
+extends /layouts/layout.jade
+
+
+//- Описывам контен
+//content start
+block content
+
+	.texteditabler
+
+	script.
+		window.onload = function(){
+
+			var settings = {
+				'defaults': 'bold|italic|underline|justifyleft|justifycenter|justifyright|superscript|subscript|InsertUnorderedList|InsertOrderedList',
+				'colorpicker': 'ForeColor|BackColor',
+				'fontType': "FontName|FontSize",
+				'table': 'insert-table',// таблица удаляется и редактируется только визуально со всплывашками
+			}
+
+
+			TXTEDTBLR.init(".texteditabler",  settings);
+
+		};
