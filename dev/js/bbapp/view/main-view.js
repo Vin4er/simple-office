@@ -30,11 +30,14 @@
 		 **/
 		initialize: function() {
 			var self = this;
+
 			self.initializeStructure();
 			self.initializeEventes();
 
 			return this;
 		},
+
+
 
 		// инт эвентов
 		initializeEventes:function(){
@@ -45,7 +48,7 @@
 
 
 		// Обработка события редактирования текста
-		EventesTextaction: function(data){
+		EventesTextaction: function(data){	
 			this.idoc.execCommand(data.action, true, true);
 		},
 
@@ -95,6 +98,7 @@
 
 			self.iwindow = self.Views.Editable.el.contentWindow;
 			self.idoc = self.Views.Editable.el.contentWindow.document;
+
 			self.idoc.open();  
 			self.idoc.write(self.Views.Editable.$el.html());
 			self.idoc.close();
@@ -104,11 +108,13 @@
 		},
 
 
-
-		
-
-
 	});
+
+
+
+
+
+
 
 	/**
 	 * Toolbar field
@@ -124,18 +130,19 @@
 			this.$el.html( app.templates.initToolbarTemplate( this.model.attributes ) );
 			return this;
 		},
-
+		// Действие кнопки
 		textaction: function(event){
 			event.preventDefault();
-			if ($(event.currentTarget).data('action')){
-				vent.trigger('textaction', { action : $(event.currentTarget).data('action') } );
-			}
-		},
-			
 
+			var action = $(event.currentTarget).data('action')
+
+			vent.trigger('textaction', { action : action } );
+		}
 
 
 	});
+
+
 
 
 	/**
@@ -153,5 +160,8 @@
 
 
 	});
+
+
+
 
 })();
