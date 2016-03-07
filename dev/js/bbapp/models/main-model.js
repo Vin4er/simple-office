@@ -4,7 +4,7 @@
 		defaults: {
 			"default": {},
 			"colorpicker": {},
-			"font-type": {},
+			"fontType": {},
 			"table": {}
 		},
 		initialize: function() {

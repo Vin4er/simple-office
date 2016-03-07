@@ -15,14 +15,6 @@ script#editableTemplate(type="text/template")
 script#toolbarTemplate(type="text/template")
 	.texteditabler-bar-buttonwrap.
 		<% _.each(defaults.split('|'), function(item){ %>
-		#[button( data-action!="<%= item %>",  class!="texteditabler-bar-button default <%=item %>") ]
+		#[button( data-action!="<%= item %>",  class!="texteditabler-bar-button default <%=item %>") <%=item %>] 
 		<% }) %>
-	// <% _.each(fontType.split('|'), function(item){ %>
-	// #[button( data-action!="<%= item %>",  class!="texteditabler-bar-button fontType <%=item %>") ]
-	// <% }) %>
-	// <% _.each(colorpicker.split('|'), function(item){ %>
-	// #[button( data-action!="<%= item %>",  class!="texteditabler-bar-button colorpicker <%=item %>") ]
-	// <% }) %>
-	// <% _.each(table.split('|'), function(item){ %>
-	// #[button( data-action!="<%= item %>",  class!="texteditabler-bar-button  table <%=item %>") ]
-	// <% }) %>
+
