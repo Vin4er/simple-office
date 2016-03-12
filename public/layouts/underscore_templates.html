@@ -14,8 +14,8 @@
 <script id="toolbarTemplate" type="text/template">
 	<div class="texteditabler-bar-buttonwrap">
 		<% _.each(defaults.split('|'), function(item){ %>
-		
-		<button data-action="<%= item %>" class="texteditabler-bar-button default <%=item %>"><%=item %></button> 
+		<span class="button">
+			<button data-action="<%= item %>" class="texteditabler-bar-button default <%=item %>"></button> </span>
 		<% }) %>
 	</div>
 </script>

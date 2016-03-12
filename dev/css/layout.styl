@@ -8,12 +8,30 @@
 	outline 0
 	box-sizing border-box
 	letter-spacing 0px
+:after, :before
+	-ms-text-size-adjust: 100%;
+	-webkit-text-size-adjust: 100%;
+	margin: 0
+	padding 0
+	box-sizing: border-box
+	letter-spacing 0px
+	outline 0
+	box-sizing border-box
+	letter-spacing 0px
+
+*
 	font-family: 'PT Sans', sans-serif;
 
-
+.fa
+	&:after, &:before
+		font-family: FontAwesome;
 
 
 @import  "./layout/inputs.styl"
+
+
+// Import component
+@import "../css/lib/fa/stylus/index"
 
 
 #page
@@ -29,21 +47,61 @@
 	margin auto
 	position relative
 	background: white
-	border: 1px solid blue
+	border: 1px solid #032828
 	&-bar
-		border-bottom: 1px solid blue
+		border-bottom: 1px solid #112E2E
 		padding 0  10px
 		position absolute
 		left 0
 		right 0
+		top: 0
 		height 50px
-		background: #F7F7F7
+		line-height: 50px
+		background: #112E2E
+		text-align left
+		.button
+			display: inline-block;
+			vertical-align: middle;
+			width: 40px
+			height: 40px;
+			line-height: 40px
 		&-button
 			display inline-block
-			width: 40px
-			height 40px
+			width: inherit
+			height inherit
+			line-height: inherit
+			color #3B9E9E
+			border: 1px solid #0A3E3E
+			background: #0A3E3E
+			cursor: pointer
+			&.bold
+				fa(bold)
+			&.italic
+				fa(italic)
+			&.underline
+				fa(underline)
+			&.justifyleft
+				fa(align-left)
+			&.justifycenter
+				fa(align-center)
+			&.justifyright
+				fa(align-right)
+			&.superscript
+				fa(superscript)
+			&.subscript
+				fa(subscript)
+			&.InsertUnorderedList
+				fa(list-ul)
+			&.InsertOrderedList
+				fa(list-ol)
 			&.active
-				border: 2px  dashed red
+				background: #112E2E
+				color #569E9E
+			&wrap
+				display: block
+				height: 50px
+				padding: 0
+				line-height: 45px
 	&-editable
 		height 100%
 		padding-top: 50px

@@ -15,6 +15,6 @@ script#editableTemplate(type="text/template")
 script#toolbarTemplate(type="text/template")
 	.texteditabler-bar-buttonwrap.
 		<% _.each(defaults.split('|'), function(item){ %>
-		#[button( data-action!="<%= item %>",  class!="texteditabler-bar-button default <%=item %>") <%=item %>] 
+		#[span.button #[button( data-action!="<%= item %>",  class!="texteditabler-bar-button default <%=item %>")] ]
 		<% }) %>
 
